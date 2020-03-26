@@ -1,7 +1,6 @@
 import six
-from cassandra.cqlengine import columns
-
 import ujson
+from cassandra.cqlengine import columns
 
 
 class UDTValueManager(columns.UDTValueManager):

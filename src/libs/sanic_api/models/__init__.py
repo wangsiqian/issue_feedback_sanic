@@ -1,7 +1,8 @@
 import logging
 
-from libs.sanic_api.models.management import DatabaseManagement
 from sanic import Sanic
+
+from libs.sanic_api.models.management import DatabaseManagement
 
 logger = logging.getLogger('sanic')
 

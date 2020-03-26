@@ -1,6 +1,6 @@
 from app import app
+from example.models.serializers import ExampleSerializer
 from libs.sanic_api.views import GetView
-from views.serializers import ExampleSerializer
 
 
 class GetExampleView(GetView):

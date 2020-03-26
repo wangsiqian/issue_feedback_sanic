@@ -2,7 +2,8 @@
 路由 http 请求
 """
 from sanic.blueprints import Blueprint
-from views import admin, api, services
+
+from example import admin, api, service
 
 ###############################
 # api
@@ -28,7 +29,7 @@ admin_blueprint.add_route(admin.ListExampleView.as_view(),
 # 内部服务使用的 api
 ##########################
 service_urls = [
-    ('/example/<example_field>', services.GetExampleView.as_view(), ['GET']),
+    ('/example/<example_field>', service.GetExampleView.as_view(), ['GET']),
 ]
 service_blueprint = Blueprint('service', url_prefix='/service/v1')
 for url, view, methods in service_urls:

@@ -3,7 +3,6 @@ import logging
 from aiocassandra import aiosession
 from cassandra import ConsistencyLevel
 from cassandra.cluster import Cluster
-
 from sanic import Sanic
 
 logger = logging.getLogger('sanic')

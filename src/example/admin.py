@@ -1,6 +1,6 @@
+from example.models.example import Example
+from example.models.serializers import ExampleSerializer
 from libs.sanic_api.views import AdminListView
-from models.db_schema import Example
-from views.serializers import ExampleSerializer
 
 
 class ListExampleView(AdminListView):

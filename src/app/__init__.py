@@ -1,9 +1,10 @@
 """
 初始化 sanic app
 """
+from sanic import Sanic
+
 from libs.cassandra.db_session import register_cassandra
 from libs.sanic_api.models import register_cassandra_session
-from sanic import Sanic
 
 app = Sanic()
 

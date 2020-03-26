@@ -41,9 +41,7 @@ def run_test(test_name):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     # 添加 -x option, 遇到 error 和 failed 直接退出
     pytest_args = [
-        '--cov=views',
         '--cov-report=term-missing',
-        '--cov-report=annotate',
         '-x',
         '-v',
         # -s 让跑测试的时候可以用 ipython

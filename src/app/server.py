@@ -3,7 +3,7 @@ sanic server
 """
 
 from app import app
-from views.routers import admin_blueprint, api_blueprint, service_blueprint
+from example.router import admin_blueprint, api_blueprint, service_blueprint
 
 app.blueprint(api_blueprint)
 app.blueprint(admin_blueprint)
@@ -16,9 +16,9 @@ def sync_db():
     import os
     from libs.sanic_api.models.management import DatabaseManagement
 
-    from models import db_schema
+    from example.models import example
     os.environ['CQLENG_ALLOW_SCHEMA_MANAGEMENT'] = 'true'
-    DatabaseManagement(app, timeout=60).sync_db(db_schema)
+    DatabaseManagement(app, timeout=60).sync_db(example)
 
 
 def run_server():

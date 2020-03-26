@@ -3,11 +3,11 @@ import time
 
 import pytest
 from cassandra.cluster import NoHostAvailable
+from sanic.server import HttpProtocol
 from tests.docs import DocsGenerator
 
 from configs.loader import get_config_from_env
 from libs.sanic_api.models.management import DatabaseManagement
-from sanic.server import HttpProtocol
 
 # 当前单元测试的序号, 用于防止名字相同的单元测试创建出相同的 keyspace
 keyspace_num = 0

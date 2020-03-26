@@ -2,11 +2,11 @@ import logging
 from inspect import isawaitable
 
 from marshmallow.exceptions import ValidationError
-
-from libs.sanic_api.exceptions import APIException, InvalidJSON
 from sanic.exceptions import InvalidUsage
 from sanic.response import json
 from sanic.views import HTTPMethodView
+
+from libs.sanic_api.exceptions import APIException, InvalidJSON
 
 logger = logging.getLogger('issue_feedback')
 

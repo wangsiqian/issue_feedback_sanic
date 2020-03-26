@@ -1,10 +1,9 @@
 import json
 import os
 
+import decorator
 import pytest
 from pytest_sanic.utils import TestClient
-
-import decorator
 
 
 def get_parent_dir(path, depth):

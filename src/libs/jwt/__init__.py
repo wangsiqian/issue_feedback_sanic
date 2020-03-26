@@ -1,7 +1,7 @@
 import jwt
+from sanic.request import Request
 
 from libs.sanic_api.views import failed_response
-from sanic.request import Request
 
 
 async def jwt_middleware(request: Request):

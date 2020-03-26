@@ -2,8 +2,8 @@ import uuid
 from datetime import datetime, timezone
 
 from app import app
+from example.models.serializers import ExampleSerializer
 from libs.sanic_api.views import PostView
-from views.serializers import ExampleSerializer
 
 
 class ExampleView(PostView):
