@@ -1,0 +1,15 @@
+language: python
+
+dist: trusty
+
+python:
+  - "3.6"
+
+services:
+  - cassandra
+
+install:
+  - pip install -q -r src/requirements.txt --no-cache-dir
+
+script:
+  - python src/manage.py --config=configs.travis_test test
