@@ -1,0 +1,17 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: kevinanew/python-driver:1.3.8
+    steps:
+    - uses: actions/checkout@v1
+
+    - run: pip install -q -r src/requirements.txt --no-cache-dir
+
+    - name: Run lint
+      run: |
+        pylava --skip '*/tests/*,*/configs/*,*/aiocqlengine/models.py'
+        yapf -dr . | (! grep '.')

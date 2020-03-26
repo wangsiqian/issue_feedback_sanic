@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+
+  issue_feedback_sanic:
+    restart: always
+    build: ../
+    ports:
+      - 8923:8000
+    volumes:
+      - ../src:/opt/app
+      - ../docs:/opt/docs
+    environment:
+      STAGE: docker_compose
+    command: sleep 999999999
+
+  cassandra:
+    restart: always
+    image: cassandra:3.11
+    ports:
+      - 9042:9042

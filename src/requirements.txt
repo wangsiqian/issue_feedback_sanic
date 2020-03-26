@@ -1,0 +1,22 @@
+# server
+sanic==19.12.2
+
+# unit test
+pytest-cov==2.5.1
+pytest-sanic==1.0.0
+pytest==5.2.0
+
+# database
+aiocassandra==2.0.1
+
+# tools
+aiohttp==3.5.4  # aiohttp 的接口经常改, 锁定版本, 避免之后更新出问题
+click==6.7
+gunicorn==19.9.0
+marshmallow==3.2.1
+pyjwt==1.7
+
+# 开发工具
+isort==4.3.18
+pylava==0.2.2
+yapf
