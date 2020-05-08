@@ -18,3 +18,10 @@ CASSANDRA_NODES = ['cassandra']
 CASSANDRA_REPLICATION_FACTOR = 1
 
 CASSANDRA_KEYSPACE = 'issue_feedback_sanic'
+
+# rabbitmq
+RABBITMQ_HOSTNAME = 'rabbitmq'
+RABBITMQ_PORT = 5672
+RABBITMQ_EXCHANGE = 'issue_feedback'
+RABBITMQ_QUEUE = 'issue_feedback'
+RABBITMQ_ROUTING_KEY = 'issue_feedback'

@@ -2,12 +2,15 @@
 sanic server
 """
 
-from app import app
-from example.router import admin_blueprint, api_blueprint, service_blueprint
+from profile import profile_api_blueprint, profile_service_blueprint
 
-app.blueprint(api_blueprint)
-app.blueprint(admin_blueprint)
-app.blueprint(service_blueprint)
+from account import account_api_blueprint, account_service_blueprint
+from app import app
+
+app.blueprint(account_api_blueprint)
+app.blueprint(account_service_blueprint)
+app.blueprint(profile_service_blueprint)
+app.blueprint(profile_api_blueprint)
 
 
 def sync_db():
@@ -15,10 +18,11 @@ def sync_db():
     """
     import os
     from libs.sanic_api.models.management import DatabaseManagement
+    from account import account
+    from profile import profile
 
-    from example.models import example
     os.environ['CQLENG_ALLOW_SCHEMA_MANAGEMENT'] = 'true'
-    DatabaseManagement(app, timeout=60).sync_db(example)
+    DatabaseManagement(app, timeout=60).sync_db(account, profile)
 
 
 def run_server():

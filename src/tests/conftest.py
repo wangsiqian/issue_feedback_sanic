@@ -1,8 +1,11 @@
 import importlib
 import time
+from threading import Thread
 
 import pytest
+import ujson
 from cassandra.cluster import NoHostAvailable
+from pika import BlockingConnection, ConnectionParameters
 from sanic.server import HttpProtocol
 from tests.docs import DocsGenerator
 
@@ -55,3 +58,56 @@ def docs_generator():
     generator = DocsGenerator()
     yield generator
     generator.build_docs()
+
+
+class RabbitMQConsumerThread(Thread):
+    """
+    帮助测试用的 rabbitmq consumer，运行在单独的线程中
+    """
+    def __init__(self, host, queue):
+        super().__init__()
+
+        self.connection = None
+        self.channel = None
+
+        self.messages = []
+        self.create_consumer(host, queue)
+
+    def create_consumer(self, host, queue):
+        self.connection = BlockingConnection(parameters=(ConnectionParameters(
+            host=host, connection_attempts=5, retry_delay=1)))
+
+        self.channel = self.connection.channel()
+        self.channel.queue_declare(queue=queue)
+        self.channel.basic_consume(queue=queue,
+                                   on_message_callback=self.callback)
+
+    def get_one(self):
+        return self.messages[-1] if self.messages else None
+
+    def callback(self, channel, method, properties, body):
+        self.messages.append(ujson.loads(body))
+
+    def run(self):
+        try:
+            self.channel.start_consuming()
+        except Exception as error:
+            print(error)
+
+    def stop(self):
+        try:
+            self.channel.stop_consuming()
+        except Exception as error:
+            print(error)
+
+
+@pytest.fixture()
+def rabbitmq_consumer(app):
+    """
+    scope: session, 整个 test session 中只创建一次
+    """
+    consumer = RabbitMQConsumerThread(app.config.RABBITMQ_HOSTNAME,
+                                      app.config.RABBITMQ_QUEUE)
+    consumer.start()
+    yield consumer
+    consumer.stop()
