@@ -1,6 +1,6 @@
 import inspect
 
-from cassandra import AlreadyExists, ConsistencyLevel
+from cassandra import AlreadyExists
 from cassandra.cluster import Cluster, NoHostAvailable
 from cassandra.cqlengine import connection as cqlengine_connection
 from cassandra.cqlengine import management
@@ -83,8 +83,6 @@ class DatabaseManagement(metaclass=Singleton):
         self.db_session.set_keyspace(self.keyspace)
         self.db_session.row_factory = dict_factory
         self.db_session.default_timeout = self.timeout
-        self.db_session.default_consistency_level = \
-            ConsistencyLevel.LOCAL_QUORUM
 
         cqlengine_connection.set_session(self.db_session)
 

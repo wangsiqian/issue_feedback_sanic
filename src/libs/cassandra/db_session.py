@@ -1,7 +1,6 @@
 import logging
 
 from aiocassandra import aiosession
-from cassandra import ConsistencyLevel
 from cassandra.cluster import Cluster
 from sanic import Sanic
 
@@ -16,7 +15,6 @@ def setup_cassandra_session_listener(app, loop):
     cassandra_cluster = Cluster(app.config.CASSANDRA_NODES)
     session = cassandra_cluster.connect(app.config.CASSANDRA_KEYSPACE)
     aiosession(session)
-    session.default_consistency_level = ConsistencyLevel.LOCAL_QUORUM
     app.cassandra = session
 
 

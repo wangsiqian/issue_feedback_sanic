@@ -59,13 +59,10 @@ async def execute(query,
     """执行 cassandra 操作"""
 
     _connection = conn.get_connection(connection)
-    if consistency_level is None:
-        # 设置默认的 Consistency level 为 LOCAL_QUORUM, 以保证数据库的一致性
-        consistency_level = ConsistencyLevel.LOCAL_QUORUM
 
     if isinstance(query, SimpleStatement):
         if query.consistency_level is None:
-            query.consistency_level = ConsistencyLevel.LOCAL_QUORUM
+            pass
     elif isinstance(query, BaseCQLStatement):
         params = query.get_context()
         query = SimpleStatement(str(query),
