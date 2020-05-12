@@ -1,14 +1,15 @@
-from profile.exceptions import ProfileAlreadyExist
+from profile.exceptions import ProfileAlreadyExist, ProfileNotFound
 from profile.models.profile import Profile
-from profile.models.serializers import ProfileSerializer
+from profile.models.serializers import (CreateProfileSerializer,
+                                        ProfileSerializer, UserIdSerializer)
 
-from libs.sanic_api.views import PostView
+from libs.sanic_api.views import GetView, PostView
 
 
 class CreateProfileService(PostView):
     """创建用户资料
     """
-    args_deserializer_class = ProfileSerializer
+    args_deserializer_class = CreateProfileSerializer
     post_serializer_class = ProfileSerializer
 
     async def save(self):
@@ -21,3 +22,19 @@ class CreateProfileService(PostView):
                                      gender=self.validated_data['gender'])
 
         raise ProfileAlreadyExist
+
+
+class GetProfileByIdService(GetView):
+    """通过用户ID查找用户资料
+    """
+    args_deserializer_class = UserIdSerializer
+    get_serializer_class = ProfileSerializer
+
+    async def get_object(self):
+        try:
+            profile = await Profile.async_get(
+                user_id=self.validated_data['user_id'])
+        except Profile.DoesNotExist:
+            raise ProfileNotFound
+
+        return profile
