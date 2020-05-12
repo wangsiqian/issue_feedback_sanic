@@ -12,3 +12,39 @@ class TestAccountService:
         message = rabbitmq_consumer.get_one()
         assert message.get('user_id')
         assert message.get('event') == 'create_profile'
+
+    async def test_login(self, client):
+        # 创建账号
+        response = await client.post('/service/v1/account',
+                                     json={
+                                         'account_id': '123456789@qq.com',
+                                         'password': '123456789@qq.com',
+                                         'role_id': '01'
+                                     })
+
+        # 登陆
+        response = await client.post('/service/v1/login',
+                                     json={
+                                         'account_id': '123456789@qq.com',
+                                         'password': '123456789@qq.com'
+                                     })
+        assert response.status == 200
+
+        json_result = await response.json()
+        print(json_result)
+
+        assert json_result['ok']
+        assert json_result['result']['token']
+        assert json_result['result']['user_id']
+        assert json_result['result']['role_id'] == '01'
+
+        # 错误的密码
+        error_response = await client.post('/service/v1/login',
+                                           json={
+                                               'account_id':
+                                               '123456789@qq.com',
+                                               'password': '6789@qq.com'
+                                           })
+        error_result = await error_response.json()
+        assert error_result['error_type'] == 'password_wrong'
+        assert error_result['message'] == '密码错误'

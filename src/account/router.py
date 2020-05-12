@@ -12,6 +12,7 @@ account_api_blueprint = Blueprint('account_api', version='1')
 
 api_urls = [
     ('/account', api.CreateAccountApi.as_view(), ['POST']),
+    ('/login', api.LoginApi.as_view(), ['POST']),
 ]
 for url, view, methods in api_urls:
     account_api_blueprint.add_route(view, url, methods=methods)
@@ -19,9 +20,8 @@ for url, view, methods in api_urls:
 ##########################
 # 内部服务使用的 api
 ##########################
-service_urls = [
-    ('/account', service.CreateAccountService.as_view(), ['POST']),
-]
+service_urls = [('/account', service.CreateAccountService.as_view(), ['POST']),
+                ('/login', service.LoginService.as_view(), ['POST'])]
 account_service_blueprint = Blueprint('account_service',
                                       url_prefix='/service/v1')
 for url, view, methods in service_urls:

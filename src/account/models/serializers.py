@@ -21,3 +21,18 @@ class CreateAccountSerializer(Schema):
             re.IGNORECASE | re.UNICODE)
         if not password_regex.match(value):
             raise PasswordIllegal
+
+
+class LoginSerializer(Schema):
+    """登陆反序列化
+    """
+    account_id = fields.Email(required=True)
+    password = fields.Str(required=True)
+
+
+class SessionSerializer(Schema):
+    """token 序列化
+    """
+    token = fields.Str(required=True)
+    user_id = fields.UUID(required=True)
+    role_id = fields.Str(required=True)

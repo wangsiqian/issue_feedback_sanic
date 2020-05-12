@@ -12,6 +12,7 @@ WORKERS = 1
 
 # jwt secret
 JWT_SECRET = 'J2dfYmXuPgtF-1KhMk01MpT3pneSAUutp5fNNT9vPrdyJN1TD9'
+JWT_EXP = 2 * 24 * 60 * 60
 
 # cassandra config
 CASSANDRA_NODES = ['cassandra']

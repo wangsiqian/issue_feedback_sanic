@@ -46,3 +46,11 @@ class Account(AioModel):
                     content_type='application/json'),
             app.config.RABBITMQ_ROUTING_KEY)
         return account
+
+    async def verify_password(self, password):
+        # 验证密码
+        encrypted_password = bcrypt.hashpw(password.encode('utf-8'), self.salt)
+        if encrypted_password != self.password:
+            return False
+        else:
+            return True

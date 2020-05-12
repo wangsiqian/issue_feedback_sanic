@@ -1,7 +1,17 @@
+from datetime import datetime, timedelta
+
 import jwt
 from sanic.request import Request
 
+from app import app
 from libs.sanic_api.views import failed_response
+
+
+async def generate_token(exp, **kwargs):
+    kwargs.update({'exp': datetime.utcnow() + timedelta(seconds=exp)})
+    token = jwt.encode(payload=kwargs, key=app.config.JWT_SECRET)
+
+    return token.decode('utf-8')
 
 
 async def jwt_middleware(request: Request):
