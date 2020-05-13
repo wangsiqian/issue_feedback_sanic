@@ -39,7 +39,7 @@ class TestProductService:
         assert product['product_id']
         assert product['created_at']
 
-    async def test_get_product(self, client):
+    async def test_list_products(self, client):
         manager1_id = str(uuid.uuid4())
         # 创建3个产品
         await self._create_product(client, manager1_id)
@@ -51,7 +51,8 @@ class TestProductService:
         await self._create_product(client, manager2_id)
 
         # 按管理员ID查询
-        response1 = await client.get(f'/service/v1/product/{manager1_id}')
+        response1 = await client.get(
+            f'/service/v1/product/manager/{manager1_id}')
         assert response1.status == 200
         json_result1 = await response1.json()
         assert json_result1['ok']
@@ -60,7 +61,8 @@ class TestProductService:
         assert products[0]['manager_id'] == manager1_id
         assert len(products) == 3
 
-        response2 = await client.get(f'/service/v1/product/{manager2_id}')
+        response2 = await client.get(
+            f'/service/v1/product/manager/{manager2_id}')
         json_result2 = await response2.json()
         products = json_result2['result']['products']
         assert products[0]['manager_id'] == manager2_id
