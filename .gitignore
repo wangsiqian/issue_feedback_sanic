@@ -106,4 +106,3 @@ ENV/
 .pytest_cache/
 
 *,cover
-docs/

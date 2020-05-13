@@ -77,7 +77,7 @@ class DocsGenerator:
             f = open(file_path, 'w+', encoding='utf-8')
             f.write(toc)
             for index, api in enumerate(self.apis[file]):
-                self._build(api, f, index)
+                self._build(api, f, index + 1)
             f.close()
 
     def _build(self, api, f, index):

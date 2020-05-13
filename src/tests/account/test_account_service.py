@@ -1,3 +1,31 @@
+from random import randint
+
+
+class AccountService:
+    @classmethod
+    async def get_token(cls, client, role_id):
+        # 创建账号
+        account_id = str(randint(0, 999999)).zfill(6) + '@qq.com'
+        await client.post('/service/v1/account',
+                          json={
+                              'account_id': account_id,
+                              'password': '123456789@qq.com',
+                              'role_id': role_id
+                          })
+
+        # 登陆
+        response = await client.post('/service/v1/login',
+                                     json={
+                                         'account_id': account_id,
+                                         'password': '123456789@qq.com'
+                                     })
+        assert response.status == 200
+        json_result = await response.json()
+        assert json_result['ok']
+
+        return json_result['result']['token']
+
+
 class TestAccountService:
     async def test_create_account(self, client, rabbitmq_consumer):
         url = '/service/v1/account'
