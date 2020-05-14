@@ -19,7 +19,7 @@ class Account(AioModel):
     salt = columns.Bytes(required=True)
 
     # 默认没有身份
-    role_id = columns.Text(default='')
+    role_id = columns.Text()
     created_at = columns.DateTime(default=datetime.utcnow)
     updated_at = columns.DateTime(default=datetime.utcnow)
 

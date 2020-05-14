@@ -1,8 +1,11 @@
 import re
 
-from marshmallow import Schema, fields, validates
+from marshmallow import Schema, ValidationError, fields, validates
 
 from account.exceptions import PasswordIllegal
+from app import app
+
+config = app.config
 
 
 class CreateAccountSerializer(Schema):
@@ -10,7 +13,7 @@ class CreateAccountSerializer(Schema):
     """
     account_id = fields.Email(required=True)
     password = fields.Str(required=True)
-    role_id = fields.Str(missing='')
+    role_id = fields.Str(missing=config.ROLE_USER)
 
     @validates('password')
     def validate_password(self, value):
@@ -21,6 +24,12 @@ class CreateAccountSerializer(Schema):
             re.IGNORECASE | re.UNICODE)
         if not password_regex.match(value):
             raise PasswordIllegal
+
+    @validates('role_id')
+    def validate_role_id(self, value):
+        roles = [config.ROLE_USER, config.ROLE_DEVELOPER, config.ROLE_MANAGER]
+        if value not in roles:
+            raise ValidationError('有内鬼，中止交易！')
 
 
 class LoginSerializer(Schema):

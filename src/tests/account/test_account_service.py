@@ -41,12 +41,12 @@ class TestAccountService:
 
     async def test_login(self, client):
         # 创建账号
-        response = await client.post('/service/v1/account',
-                                     json={
-                                         'account_id': '123456789@qq.com',
-                                         'password': '123456789@qq.com',
-                                         'role_id': '01'
-                                     })
+        await client.post('/service/v1/account',
+                          json={
+                              'account_id': '123456789@qq.com',
+                              'password': '123456789@qq.com',
+                              'role_id': 'USER'
+                          })
 
         # 登陆
         response = await client.post('/service/v1/login',
@@ -62,7 +62,7 @@ class TestAccountService:
         assert json_result['ok']
         assert json_result['result']['token']
         assert json_result['result']['user_id']
-        assert json_result['result']['role_id'] == '01'
+        assert json_result['result']['role_id'] == 'USER'
 
         # 错误的密码
         error_response = await client.post('/service/v1/login',
