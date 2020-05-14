@@ -3,7 +3,7 @@ from libs.sanic_api.exceptions import APIException
 
 class PasswordIllegal(APIException):
     error_type = 'password_illegal'
-    error_message = '密码不能纯数字，至少包含字母或符号.~!@&%#_，且长度为8～16'
+    error_message = '密码不能纯数字，至少包含一个字母或一个符号.~!@&%#_，且长度为8～16'
 
 
 class AccountAlreadyExist(APIException):

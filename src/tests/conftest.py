@@ -101,13 +101,13 @@ class RabbitMQConsumerThread(Thread):
             print(error)
 
 
-@pytest.fixture()
-def rabbitmq_consumer(app):
-    """
-    scope: session, 整个 test session 中只创建一次
-    """
-    consumer = RabbitMQConsumerThread(app.config.RABBITMQ_HOSTNAME,
-                                      app.config.RABBITMQ_QUEUE)
-    consumer.start()
-    yield consumer
-    consumer.stop()
+# @pytest.fixture()
+# def rabbitmq_consumer(app):
+#     """
+#     scope: session, 整个 test session 中只创建一次
+#     """
+#     consumer = RabbitMQConsumerThread(app.config.RABBITMQ_HOSTNAME,
+#                                       app.config.RABBITMQ_QUEUE)
+#     consumer.start()
+#     yield consumer
+#     consumer.stop()

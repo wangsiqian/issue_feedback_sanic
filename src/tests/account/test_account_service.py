@@ -27,7 +27,7 @@ class AccountService:
 
 
 class TestAccountService:
-    async def test_create_account(self, client, rabbitmq_consumer):
+    async def test_create_account(self, client):
         url = '/service/v1/account'
         response = await client.post(url,
                                      json={
@@ -36,10 +36,8 @@ class TestAccountService:
                                      })
 
         assert response.status == 200
-
-        message = rabbitmq_consumer.get_one()
-        assert message.get('user_id')
-        assert message.get('event') == 'create_profile'
+        json_result = await response.json()
+        assert json_result['ok']
 
     async def test_login(self, client):
         # 创建账号
