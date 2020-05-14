@@ -16,9 +16,8 @@ class CreateAccountSerializer(Schema):
     def validate_password(self, value):
         """验证密码
         """
-        password_regex = re.compile(
-            '^(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9.~!@&%#_]{8,16}$',
-            re.IGNORECASE | re.UNICODE)
+        password_regex = re.compile('^(?=.*[a-zA-Z.~!@&%#_])[0-9]{8,16}$',
+                                    re.IGNORECASE | re.UNICODE)
         if not password_regex.match(value):
             raise PasswordIllegal
 
