@@ -1,4 +1,5 @@
-from profile.service import CreateProfileService, GetProfileByIdService
+from profile.service import (CreateProfileService, GetProfileByIdService,
+                             UpdateProfileService)
 
 
 class CreateProfileApi(CreateProfileService):
@@ -7,3 +8,7 @@ class CreateProfileApi(CreateProfileService):
 
 class GetProfileByIdApi(GetProfileByIdService):
     pass
+
+
+class UpdateProfileApi(UpdateProfileService):
+    put_serializer_class = None

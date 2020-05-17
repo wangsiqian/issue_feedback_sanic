@@ -1,14 +1,20 @@
-import uuid
-
 from marshmallow import Schema, fields
 
 
 class CreateProfileSerializer(Schema):
     """用于反序列化创建 profile 的数据
     """
-    user_id = fields.UUID(missing=str(uuid.uuid4()))
+    user_id = fields.UUID(required=True)
     nickname = fields.Str(required=True)
     gender = fields.Integer(missing=1)
+
+
+class UpdateProfileSerializer(Schema):
+    """用于反序列化创建 profile 的数据
+    """
+    user_id = fields.UUID(required=True)
+    nickname = fields.Str()
+    gender = fields.Integer()
 
 
 class ProfileSerializer(Schema):

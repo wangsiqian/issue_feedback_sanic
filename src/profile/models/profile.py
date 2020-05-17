@@ -21,3 +21,8 @@ class Profile(AioModel):
         return await Profile.async_create(user_id=user_id,
                                           nickname=nickname,
                                           gender=gender)
+
+    async def update_profile(self, **profiles):
+        profiles['updated_at'] = datetime.utcnow()
+        new_profile = await self.async_update(**profiles)
+        return new_profile

@@ -1,3 +1,4 @@
+import logging
 from random import randint
 
 import requests
@@ -9,17 +10,18 @@ from retry import retry
 from configs.loader import load_config
 
 config = load_config()
+logger = logging.getLogger('create_profile')
 
 
 def callback(channel, method, properties, body):
     message = ujson.loads(body)
     user_id = message.get('user_id')
     event = message.get('event')
-    if not user_id or not event != 'create_profile':
+    if not user_id or event != 'create_profile':
         return
 
-    response = requests.post(url='http://0.0.0.0:8000/v1/profile',
-                             body={
+    response = requests.post(url='http://issue_feedback_sanic:8000/v1/profile',
+                             json={
                                  'nickname':
                                  'user' + str(randint(0, 999999)).zfill(6),
                                  'user_id':
@@ -29,6 +31,8 @@ def callback(channel, method, properties, body):
 
     if response.status_code == 200:
         payload = response.json()
+
+        logger.info(payload)
         print(payload)
 
 
@@ -40,8 +44,7 @@ def consume():
     channel = connection.channel()
     channel.queue_declare(queue=config.RABBITMQ_QUEUE)
     channel.basic_consume(queue=config.RABBITMQ_QUEUE,
-                          on_message_callback=callback,
-                          auto_ack=True)
+                          on_message_callback=callback)
     channel.start_consuming()
 
 
