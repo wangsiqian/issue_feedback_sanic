@@ -2,6 +2,7 @@ from random import randint
 
 import ujson
 from aio_pika import Message
+from jwt import PyJWTError
 
 from account.exceptions import (AccountAlreadyExist, AccountNotFound,
                                 CodeAlreadyExpired, CodeAlreadySent,
@@ -22,7 +23,16 @@ class CreateAccountService(PostView):
     args_deserializer_class = CreateAccountServiceSerializer
 
     async def save(self):
-        token_payload = decode_token(self.validated_data['validate_token'])
+        try:
+            # 解析 token
+            token_payload = decode_token(self.validated_data['validate_token'])
+        except PyJWTError:
+            raise CodeAlreadyExpired
+        else:
+            if not isinstance(token_payload, dict):
+                # 可能解析失败为其他对象
+                raise CodeAlreadyExpired
+
         account_id = self.validated_data['account_id']
         validate_code = self.validated_data['validate_code']
         if account_id != token_payload.get(
@@ -61,7 +71,6 @@ class SendCodeService(PostView):
                                                   account_id=account_id,
                                                   validate_code=validate_code)
 
-            # TODO: 暂时放到消息队列，但是还未对消息进行处理，返回生成的验证码，让前端方便测试
             await app.exchange.publish(
                 Message(ujson.dumps({
                     'account_id': account_id,

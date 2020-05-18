@@ -40,3 +40,7 @@ ROLE_MANAGER = 'MANAGER'
 
 # RPC hostname
 CREATE_PROFILE_URL = 'http://issue_feedback_sanic:8000/v1/profile'
+
+# email config
+EMAIL_ADDRESS = ''
+EMAIL_PASSWORD = ''
