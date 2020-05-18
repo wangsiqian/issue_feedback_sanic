@@ -17,6 +17,15 @@ class CreateProductService(PostView):
             description=self.validated_data['description'])
 
 
+class ListProductsService(ListView):
+    args_deserializer_class = None
+    list_serializer_class = ProductSerializer
+    list_result_name = 'products'
+
+    async def filter_objects(self):
+        return await Product.async_all()
+
+
 class ListProductByManagerService(ListView):
     """根据管理人ID列出产品
     """

@@ -40,6 +40,24 @@ class TestProductService:
         assert product['created_at']
 
     async def test_list_products(self, client):
+        """测试列出产品"""
+        manager_id = str(uuid.uuid4())
+        # 创建3个产品
+        await self._create_product(client, manager_id)
+        await self._create_product(client, manager_id)
+        await self._create_product(client, manager_id)
+
+        response = await client.get(f'/service/v1/products')
+        assert response.status == 200
+
+        json_result = await response.json()
+        assert json_result['ok']
+
+        products = json_result['result']['products']
+        print(products)
+        assert len(products) == 3
+
+    async def test_list_products_by_manager(self, client):
         manager1_id = str(uuid.uuid4())
         # 创建3个产品
         await self._create_product(client, manager1_id)
