@@ -45,6 +45,7 @@ class Account(AioModel):
             }).encode(),
                     content_type='application/json'),
             app.config.RABBITMQ_ROUTING_KEY)
+
         return account
 
     async def verify_password(self, password):
@@ -54,3 +55,13 @@ class Account(AioModel):
             return False
         else:
             return True
+
+
+class CodeRecord(AioModel):
+    account_id = columns.Text(primary_key=True)
+    created_at = columns.DateTime(default=datetime.utcnow)
+
+    @classmethod
+    async def new(cls, account_id):
+        return await CodeRecord.ttl(app.config.CODE_RECORD_TTL
+                                    ).async_create(account_id=account_id)

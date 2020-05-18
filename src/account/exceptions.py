@@ -19,3 +19,13 @@ class AccountNotFound(APIException):
 class PasswordWrong(APIException):
     error_type = 'password_wrong'
     error_message = '密码错误'
+
+
+class CodeAlreadyExpired(APIException):
+    error_type = 'code_already_expired'
+    error_message = '验证码已经失效'
+
+
+class CodeAlreadySent(APIException):
+    error_type = 'code_already_sent'
+    error_message = '验证码已经发送'

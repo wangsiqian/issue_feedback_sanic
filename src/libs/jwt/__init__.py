@@ -14,6 +14,22 @@ async def generate_token(exp, **kwargs):
     return token.decode('utf-8')
 
 
+def decode_token(token):
+    try:
+        payload = jwt.decode(token,
+                             key=app.config.JWT_SECRET,
+                             algorithms=['HS256'])
+    except jwt.ExpiredSignatureError:
+        # jwt 默认使用 payload 中的 exp 字段来验证是否过期, 类型是 timestamp
+        return failed_response(error_message='此请求已过期',
+                               error_type='api_signature_expired')
+
+    # 验证过期后删除无用字段
+    payload.pop('exp', None)
+
+    return payload
+
+
 async def jwt_middleware(request: Request, role_ids):
     """中间件, 验证 jwt 并解析 jwt payload 转换为 request.payload
     """
@@ -22,16 +38,7 @@ async def jwt_middleware(request: Request, role_ids):
         return failed_response(error_message='此 API 签名不正确',
                                error_type='api_signature_invalid')
 
-    jwt_secret = request.app.config.JWT_SECRET
-    try:
-        payload = jwt.decode(raw_jwt, key=jwt_secret, algorithms=['HS256'])
-    except jwt.ExpiredSignatureError:
-        # jwt 默认使用 payload 中的 exp 字段来验证是否过期, 类型是 timestamp
-        return failed_response(error_message='此请求已过期',
-                               error_type='api_signature_expired')
-
-    # 验证过期后删除无用字段
-    payload.pop('exp', None)
+    payload = decode_token(raw_jwt)
 
     # 验证身份
     if payload.get('role_id') not in role_ids:

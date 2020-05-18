@@ -27,11 +27,11 @@ services:
       - 5672:5672
       - 15672:15672
 
-  create_profile_projector:
+  issue_feedback_projector:
     restart: always
     build: ../
     volumes:
       - ../src:/opt/app
     environment:
       STAGE: docker_compose
-    command: python projector/create_profile.py
+    command: python projector/consumer.py

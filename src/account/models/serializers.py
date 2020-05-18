@@ -8,12 +8,13 @@ from app import app
 config = app.config
 
 
-class CreateAccountSerializer(Schema):
-    """用于反序列化请求的数据
+class CreateAccountApiSerializer(Schema):
+    """用于反序列化API创建账号请求的数据
     """
     account_id = fields.Email(required=True)
     password = fields.Str(required=True)
-    role_id = fields.Str(missing=config.ROLE_USER)
+    validate_token = fields.Str(required=True)
+    validate_code = fields.Str(required=True)
 
     @validates('password')
     def validate_password(self, value):
@@ -24,6 +25,12 @@ class CreateAccountSerializer(Schema):
             re.IGNORECASE | re.UNICODE)
         if not password_regex.match(value):
             raise PasswordIllegal
+
+
+class CreateAccountServiceSerializer(CreateAccountApiSerializer):
+    """用于反序列化内部服务创建账号请求的数据
+    """
+    role_id = fields.Str(missing=config.ROLE_USER)
 
     @validates('role_id')
     def validate_role_id(self, value):
@@ -45,3 +52,22 @@ class SessionSerializer(Schema):
     token = fields.Str(required=True)
     user_id = fields.UUID(required=True)
     role_id = fields.Str(required=True)
+
+
+class AccountIdSerializer(Schema):
+    """反序列化账号ID
+    """
+    account_id = fields.Email(required=True)
+
+
+class ValidationSerializer(Schema):
+    """序列化邮箱验证生成的 token 数据
+    """
+    validate_token = fields.Str()
+    validate_code = fields.Str()
+
+
+class ValidationTokenSerializer(Schema):
+    """序列化邮箱验证生成的 token 数据
+    """
+    validate_token = fields.Str()

@@ -12,7 +12,13 @@ WORKERS = 1
 
 # jwt secret
 JWT_SECRET = 'J2dfYmXuPgtF-1KhMk01MpT3pneSAUutp5fNNT9vPrdyJN1TD9'
-JWT_EXP = 2 * 24 * 60 * 60
+# 登陆 token 失效时间
+JWT_SESSION_EXP = 2 * 24 * 60 * 60
+# 验证码 token 过期时间
+JWT_CODE_EXP = 3 * 60
+
+# 验证码记录时间
+CODE_RECORD_TTL = 3 * 60
 
 # cassandra config
 CASSANDRA_NODES = ['cassandra']
@@ -31,3 +37,6 @@ RABBITMQ_ROUTING_KEY = 'issue_feedback'
 ROLE_USER = 'USER'
 ROLE_DEVELOPER = 'DEVELOPER'
 ROLE_MANAGER = 'MANAGER'
+
+# RPC hostname
+CREATE_PROFILE_URL = 'http://issue_feedback_sanic:8000/v1/profile'
