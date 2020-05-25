@@ -127,6 +127,7 @@ class TestIssueService:
         issues = json_result['result']['issues']
         # 返回两个反馈
         assert len(issues) == 2
+        assert json_result['result']['count'] == 2
 
         # 测试分页
         response2 = await client.get(
@@ -140,3 +141,4 @@ class TestIssueService:
         filtered_issues = json_result2['result']['issues']
         # 返回一个反馈
         assert len(filtered_issues) == 1
+        assert json_result2['result']['count'] == 2

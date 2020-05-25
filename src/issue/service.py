@@ -7,7 +7,8 @@ from issue.models.serializers import (CreateIssueSerializer, IssueIdSerializer,
                                       IssueVoteSerializer,
                                       MultiQueryIssuesSerializer,
                                       StatisticsSerializer)
-from libs.sanic_api.views import GetView, ListView, PostView, PutView
+from libs.sanic_api.views import (GetView, ListView, PostView, PutView,
+                                  ok_response)
 
 
 class CreateIssueService(PostView):
@@ -59,10 +60,20 @@ class ListIssuesByProductIdService(ListView):
                                key=lambda issue: issue.created_at,
                                reverse=True)
 
+        return sorted_issues
+
+    def response(self, results):
+        # 分页
         start = self.validated_data.get('start', 0)
         limit = self.validated_data.get('limit', 10)
-        # 分页
-        return sorted_issues[start:start + limit]
+
+        _serializer = self.list_serializer_class()
+        return ok_response({
+            self.list_result_name:
+            _serializer.dump(results[start:start + limit], many=True),
+            'count':
+            len(results)
+        })
 
 
 class IssueVoteService(PutView):
