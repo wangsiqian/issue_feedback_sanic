@@ -17,7 +17,9 @@ api_urls = [('/issue',
                          role_ids=(app.config.ROLE_USER, )), ['POST']),
             ('/issue/<issue_id>/user/<user_id>/vote',
              jwt_wrapper(api.IssueVoteApi.as_view(),
-                         role_ids=(app.config.ROLE_USER, )), ['PUT'])]
+                         role_ids=(app.config.ROLE_USER, )), ['PUT']),
+            ('/issue/product/<product_id>/opening',
+             api.ListIssuesByProductIdApi.as_view(), ['GET'])]
 for url, view, methods in api_urls:
     issue_api_blueprint.add_route(view, url, methods=methods)
 
@@ -28,7 +30,9 @@ service_urls = [('/issue', service.CreateIssueService.as_view(), ['POST']),
                 ('/issue/<issue_id>/user/<user_id>/vote',
                  service.IssueVoteService.as_view(), ['PUT']),
                 ('/issue/<issue_id>/statistics',
-                 service.GetStatisticsByIssueIdService.as_view(), ['GET'])]
+                 service.GetStatisticsByIssueIdService.as_view(), ['GET']),
+                ('/issue/product/<product_id>',
+                 service.ListIssuesByProductIdService.as_view(), ['GET'])]
 issue_service_blueprint = Blueprint('issue_service', url_prefix='/service/v1')
 for url, view, methods in service_urls:
     issue_service_blueprint.add_route(view, url, methods=methods)

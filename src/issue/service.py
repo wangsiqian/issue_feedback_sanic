@@ -1,11 +1,13 @@
+from app import app
 from issue.exceptions import IssueAlreadyExist, StatisticsNotFount
 from issue.models.issue import Issue, IssueVoteRecord, IssueVoteStatistics
 from issue.models.serializers import (CreateIssueSerializer, IssueIdSerializer,
                                       IssueSerializer,
                                       IssueVoteRecordSerializer,
                                       IssueVoteSerializer,
+                                      MultiQueryIssuesSerializer,
                                       StatisticsSerializer)
-from libs.sanic_api.views import GetView, PostView, PutView
+from libs.sanic_api.views import GetView, ListView, PostView, PutView
 
 
 class CreateIssueService(PostView):
@@ -30,6 +32,37 @@ class CreateIssueService(PostView):
                 description=self.validated_data['description'])
 
         raise IssueAlreadyExist
+
+
+class ListIssuesByProductIdService(ListView):
+    list_result_name = 'issues'
+    args_deserializer_class = MultiQueryIssuesSerializer
+    list_serializer_class = IssueSerializer
+
+    async def filter_objects(self):
+        issues = await app.cassandra.execute_future(
+            """
+            SELECT product_id,
+                   owner_id,
+                   issue_id,
+                   title,
+                   description,
+                   status,
+                   created_at,
+                   updated_at
+            FROM issue
+            WHERE product_id = %s
+              AND status = %s
+        """,
+            (self.validated_data['product_id'], self.validated_data['status']))
+        sorted_issues = sorted(issues,
+                               key=lambda issue: issue.created_at,
+                               reverse=True)
+
+        start = self.validated_data.get('start', 0)
+        limit = self.validated_data.get('limit', 10)
+        # 分页
+        return sorted_issues[start:start + limit]
 
 
 class IssueVoteService(PutView):

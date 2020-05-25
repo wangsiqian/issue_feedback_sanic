@@ -98,3 +98,45 @@ class TestIssueService:
         # 变为 0
         assert json_result3['result']['likes'] == 0
         assert json_result3['result']['dislikes'] == 1
+
+    async def test_list_issues_by_product_id(self, client):
+        product_id = str(uuid.uuid4())
+        # 创建两个反馈
+        await IssueService.create_issue(client=client,
+                                        product_id=product_id,
+                                        owner_id=str(uuid.uuid4()),
+                                        title='反馈1')
+        await IssueService.create_issue(client=client,
+                                        product_id=product_id,
+                                        owner_id=str(uuid.uuid4()),
+                                        title='反馈2')
+
+        # 另一个产品的反馈
+        await IssueService.create_issue(client=client,
+                                        product_id=str(uuid.uuid4()),
+                                        owner_id=str(uuid.uuid4()),
+                                        title='反馈2')
+
+        response = await client.get(
+            f'/service/v1/issue/product/{product_id}?status=opening')
+        assert response.status == 200
+
+        json_result = await response.json()
+        assert json_result['ok']
+
+        issues = json_result['result']['issues']
+        # 返回两个反馈
+        assert len(issues) == 2
+
+        # 测试分页
+        response2 = await client.get(
+            f'/service/v1/issue/product/{product_id}?status=opening&limit=1&start=0'
+        )
+        assert response2.status == 200
+
+        json_result2 = await response2.json()
+        assert json_result2['ok']
+
+        filtered_issues = json_result2['result']['issues']
+        # 返回一个反馈
+        assert len(filtered_issues) == 1

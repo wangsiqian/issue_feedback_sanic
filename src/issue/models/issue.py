@@ -20,7 +20,7 @@ class Issue(AioModel):
     description = columns.Text()
 
     # 默认开放
-    status = columns.Text(default=STATUS_OPENING)
+    status = columns.Text(default=STATUS_OPENING, index=True)
     issue_id = columns.UUID(default=str(uuid.uuid4()))
 
     created_at = columns.DateTime(default=datetime.utcnow)
