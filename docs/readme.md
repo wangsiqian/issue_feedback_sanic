@@ -7,7 +7,7 @@
 | --- | --- | --- |
 | path | `/v1/issue` | - |
 | method | `POST` | - |
-| header | `Authentication` | 用户 Token |
+| header | `Authorization` | 用户 Token |
 | body | `product_id（必填）` | 产品ID |
 | body | `owner_id（必填）` | 创建者ID |
 | body | `title（必填）` | 反馈标题 |

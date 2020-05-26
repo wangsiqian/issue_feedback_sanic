@@ -35,7 +35,7 @@ def decode_token(token):
 async def jwt_middleware(request: Request, required: bool, role_ids):
     """中间件, 验证 jwt 并解析 jwt payload 转换为 request.payload
     """
-    raw_jwt = request.headers.get('Authentication', None)
+    raw_jwt = request.headers.get('Authorization', None)
     if not raw_jwt:
         return failed_response(error_message='此 API 签名不正确',
                                error_type='api_signature_invalid')

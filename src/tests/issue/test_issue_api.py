@@ -17,7 +17,7 @@ class TestIssueApi:
                   'title（必填）': '反馈标题',
                   'description（非必填）': '反馈描述'
               },
-              headers={'Authentication': '用户 Token'})
+              headers={'Authorization': '用户 Token'})
     async def test_create_issue(self, client):
         url = '/v1/issue'
 
@@ -33,7 +33,7 @@ class TestIssueApi:
                                          'title': '反馈标题',
                                          'description': 'description'
                                      },
-                                     headers={'Authentication': token})
+                                     headers={'Authorization': token})
         assert response.status == 200
 
         json_result = await response.json()
@@ -47,7 +47,8 @@ class TestIssueApi:
                 'owner_id': owner_id,
                 'title': '反馈标题'
             },
-            headers={'Authentication': await generate_token(10)})
+            headers={'Authorization': await generate_token(10)})
+
         assert error_response2.status == 200
 
         error_result2 = await error_response2.json()
