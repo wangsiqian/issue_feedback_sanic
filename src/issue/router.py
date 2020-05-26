@@ -10,15 +10,15 @@ from issue import api, service
 ###############################
 from libs.jwt import jwt_wrapper
 
+config = app.config
+
 issue_api_blueprint = Blueprint('issue_api', version='1')
 
-api_urls = [('/issue',
-             jwt_wrapper(api.CreateIssueApi.as_view(),
-                         role_ids=(app.config.ROLE_USER, )), ['POST']),
+api_urls = [('/issue', jwt_wrapper(api.CreateIssueApi.as_view(),
+                                   required=True), ['POST']),
             ('/issue/<issue_id>/user/<user_id>/vote',
-             jwt_wrapper(api.IssueVoteApi.as_view(),
-                         role_ids=(app.config.ROLE_USER, )), ['PUT']),
-            ('/issue/product/<product_id>/opening',
+             jwt_wrapper(api.IssueVoteApi.as_view(), required=True), ['PUT']),
+            ('/issue/product/<product_id>',
              api.ListIssuesByProductIdApi.as_view(), ['GET'])]
 for url, view, methods in api_urls:
     issue_api_blueprint.add_route(view, url, methods=methods)

@@ -4,6 +4,7 @@ from tests.account.test_account_service import AccountService
 from tests.docs import api_docs
 
 from app import app
+from libs.jwt import generate_token
 
 
 class TestIssueApi:
@@ -38,41 +39,19 @@ class TestIssueApi:
         json_result = await response.json()
         assert json_result['ok']
 
-        # 再次创建
-        error_response1 = await client.post(url,
-                                            json={
-                                                'product_id': product_id,
-                                                'owner_id': owner_id,
-                                                'title': '反馈标题'
-                                            },
-                                            headers={'Authentication': token})
-        assert error_response1.status == 200
-
-        error_result1 = await error_response1.json()
-        assert error_result1['error_type'] == 'issue_already_exist'
-        assert error_result1['message'] == '您已经反馈过相关问题了'
-
-        # 用其他身份反馈
-        error_response2 = await client.post(url,
-                                            json={
-                                                'product_id': product_id,
-                                                'owner_id': owner_id,
-                                                'title': '反馈标题'
-                                            },
-                                            headers={
-                                                'Authentication':
-                                                await AccountService.get_token(
-                                                    client,
-                                                    app.config.ROLE_DEVELOPER)
-                                            })
+        # 未登录的人员
+        error_response2 = await client.post(
+            url,
+            json={
+                'product_id': product_id,
+                'owner_id': owner_id,
+                'title': '反馈标题'
+            },
+            headers={'Authentication': await generate_token(10)})
         assert error_response2.status == 200
 
         error_result2 = await error_response2.json()
         assert error_result2['error_type'] == 'permission_denied'
         assert error_result2['message'] == '没有权限'
 
-        return {
-            '正确响应': json_result,
-            '错误响应': error_result1,
-            '权限验证错误': error_result2
-        }
+        return {'正确响应': json_result, '权限验证错误': error_result2}

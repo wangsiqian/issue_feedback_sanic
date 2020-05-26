@@ -14,24 +14,60 @@ class Issue(AioModel):
     STATUS_OPENING = 'opening'
     STATUS_CLOSED = 'closed'
 
-    product_id = columns.UUID(partition_key=True)
-    owner_id = columns.UUID(primary_key=True)
-    title = columns.Text(primary_key=True)
+    issue_id = columns.UUID(primary_key=True)
+    owner_id = columns.UUID()
+    title = columns.Text()
     description = columns.Text()
 
+    developer_ids = columns.List(value_type=columns.UUID)
     # 默认开放
     status = columns.Text(default=STATUS_OPENING, index=True)
-    issue_id = columns.UUID(default=str(uuid.uuid4()))
 
     created_at = columns.DateTime(default=datetime.utcnow)
     updated_at = columns.DateTime(default=datetime.utcnow)
 
     @classmethod
     async def new(cls, product_id, owner_id, title, description):
-        return await Issue.async_create(product_id=product_id,
-                                        owner_id=owner_id,
-                                        title=title,
-                                        description=description)
+        issue_id = str(uuid.uuid4())
+        issue = await Issue.async_create(issue_id=issue_id,
+                                         owner_id=owner_id,
+                                         title=title,
+                                         description=description)
+
+        # 分区
+        await IssueByProduct.new(product_id, issue_id)
+        await IssueByUser.new(owner_id, issue_id)
+
+        return issue
+
+
+class IssueByProduct(AioModel):
+    """按产品分区
+    """
+    __table_name__ = 'issue_by_product'
+
+    product_id = columns.UUID(partition_key=True)
+    issue_id = columns.UUID(primary_key=True)
+    created_at = columns.DateTime(default=datetime.utcnow)
+
+    @classmethod
+    async def new(cls, product_id, issue_id):
+        await IssueByProduct.async_create(product_id=product_id,
+                                          issue_id=issue_id)
+
+
+class IssueByUser(AioModel):
+    """按创建者分区
+    """
+    __table_name__ = 'issue_by_user'
+
+    owner_id = columns.UUID(partition_key=True)
+    issue_id = columns.UUID(primary_key=True)
+    created_at = columns.DateTime(default=datetime.utcnow)
+
+    @classmethod
+    async def new(cls, owner_id, issue_id):
+        await IssueByUser.async_create(owner_id=owner_id, issue_id=issue_id)
 
 
 class IssueVoteRecord(AioModel):

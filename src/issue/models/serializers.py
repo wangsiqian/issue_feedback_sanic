@@ -15,9 +15,8 @@ class CreateIssueSerializer(Schema):
 class IssueSerializer(Schema):
     """序列化反馈返回的数据
     """
-    product_id = fields.UUID()
-    owner_id = fields.UUID()
     issue_id = fields.UUID()
+    owner_id = fields.UUID()
     title = fields.Str()
     description = fields.Str()
     status = fields.Str()
@@ -81,3 +80,7 @@ class MultiQueryIssuesSerializer(Schema):
     def validate_start(self, value):
         if value < 0:
             raise ValidationError('Only accept greater than 0')
+
+
+class AssignIssueSerializer(Schema):
+    issue_id = fields.UUID(required=True)

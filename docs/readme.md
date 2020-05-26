@@ -21,14 +21,6 @@
   "result": {}
 }
 ```
-错误响应: 
-```json
-{
-  "error_type": "issue_already_exist",
-  "message": "您已经反馈过相关问题了",
-  "ok": false
-}
-```
 权限验证错误: 
 ```json
 {

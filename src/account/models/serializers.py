@@ -34,8 +34,7 @@ class CreateAccountServiceSerializer(CreateAccountApiSerializer):
 
     @validates('role_id')
     def validate_role_id(self, value):
-        roles = [config.ROLE_USER, config.ROLE_DEVELOPER, config.ROLE_MANAGER]
-        if value not in roles:
+        if value not in config.ROLES:
             raise ValidationError('有内鬼，中止交易！')
 
 

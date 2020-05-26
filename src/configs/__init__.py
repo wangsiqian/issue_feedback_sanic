@@ -38,6 +38,9 @@ ROLE_USER = 'USER'
 ROLE_DEVELOPER = 'DEVELOPER'
 ROLE_MANAGER = 'MANAGER'
 
+# 有权限的身份
+ROLES = [ROLE_USER, ROLE_DEVELOPER, ROLE_MANAGER]
+
 # RPC hostname
 CREATE_PROFILE_URL = 'http://issue_feedback_sanic:8000/v1/profile'
 

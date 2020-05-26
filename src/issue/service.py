@@ -1,6 +1,6 @@
-from app import app
-from issue.exceptions import IssueAlreadyExist, StatisticsNotFount
-from issue.models.issue import Issue, IssueVoteRecord, IssueVoteStatistics
+from issue.exceptions import StatisticsNotFount
+from issue.models.issue import (Issue, IssueByProduct, IssueVoteRecord,
+                                IssueVoteStatistics)
 from issue.models.serializers import (CreateIssueSerializer, IssueIdSerializer,
                                       IssueSerializer,
                                       IssueVoteRecordSerializer,
@@ -18,21 +18,10 @@ class CreateIssueService(PostView):
     post_serializer_class = IssueSerializer
 
     async def save(self):
-        product_id = self.validated_data['product_id']
-        owner_id = self.validated_data['owner_id']
-        title = self.validated_data['title']
-        try:
-            await Issue.async_get(product_id=product_id,
-                                  owner_id=owner_id,
-                                  title=title)
-        except Issue.DoesNotExist:
-            return await Issue.new(
-                product_id=product_id,
-                owner_id=owner_id,
-                title=title,
-                description=self.validated_data['description'])
-
-        raise IssueAlreadyExist
+        return await Issue.new(product_id=self.validated_data['product_id'],
+                               owner_id=self.validated_data['owner_id'],
+                               title=self.validated_data['title'],
+                               description=self.validated_data['description'])
 
 
 class ListIssuesByProductIdService(ListView):
@@ -41,25 +30,25 @@ class ListIssuesByProductIdService(ListView):
     list_serializer_class = IssueSerializer
 
     async def filter_objects(self):
-        issues = await app.cassandra.execute_future(
-            """
-            SELECT product_id,
-                   owner_id,
-                   issue_id,
-                   title,
-                   description,
-                   status,
-                   created_at,
-                   updated_at
-            FROM issue
-            WHERE product_id = %s
-              AND status = %s
-        """,
-            (self.validated_data['product_id'], self.validated_data['status']))
-        sorted_issues = sorted(issues,
-                               key=lambda issue: issue.created_at,
-                               reverse=True)
+        # 查询该产品下有哪些 issue
+        issues_by_product = await IssueByProduct.objects.filter(
+            product_id=self.validated_data['product_id']).async_all()
 
+        issues = []
+        for issue_by_product in issues_by_product:
+            try:
+                issue = await Issue.async_get(
+                    issue_id=issue_by_product.issue_id,
+                    status=self.validated_data['status'])
+            except Issue.DoesNotExist:
+                continue
+
+            issues.append(issue)
+
+        # 排序
+        sorted_issues = sorted(issues,
+                               key=lambda _issue: _issue.created_at,
+                               reverse=True)
         return sorted_issues
 
     def response(self, results):
