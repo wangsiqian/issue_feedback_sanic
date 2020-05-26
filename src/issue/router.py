@@ -16,7 +16,7 @@ issue_api_blueprint = Blueprint('issue_api', version='1')
 
 api_urls = [('/issue', jwt_wrapper(api.CreateIssueApi.as_view(),
                                    required=True), ['POST']),
-            ('/issue/<issue_id>/user/<user_id>/vote',
+            ('/issue/<issue_id>/vote',
              jwt_wrapper(api.IssueVoteApi.as_view(), required=True), ['PUT']),
             ('/issue/product/<product_id>',
              api.ListIssuesByProductIdApi.as_view(), ['GET'])]
@@ -27,8 +27,8 @@ for url, view, methods in api_urls:
 # 内部服务使用的 api
 ##########################
 service_urls = [('/issue', service.CreateIssueService.as_view(), ['POST']),
-                ('/issue/<issue_id>/user/<user_id>/vote',
-                 service.IssueVoteService.as_view(), ['PUT']),
+                ('/issue/<issue_id>/vote', service.IssueVoteService.as_view(),
+                 ['PUT']),
                 ('/issue/<issue_id>/statistics',
                  service.GetStatisticsByIssueIdService.as_view(), ['GET']),
                 ('/issue/product/<product_id>',

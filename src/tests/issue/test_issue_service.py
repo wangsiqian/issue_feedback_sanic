@@ -48,9 +48,13 @@ class TestIssueService:
                                                    owner_id=user_id,
                                                    title='反馈')
 
-        url = f'/service/v1/issue/{issue_id}/user/{user_id}/vote'
+        url = f'/service/v1/issue/{issue_id}/vote'
         # 投票
-        response = await client.put(url, json={'opinion': 'like'})
+        response = await client.put(url,
+                                    json={
+                                        'opinion': 'like',
+                                        'user_id': user_id
+                                    })
         assert response.status == 200
 
         json_result = await response.json()
@@ -72,7 +76,7 @@ class TestIssueService:
         assert json_result2['result']['dislikes'] == 0
 
         # 二次投票
-        await client.put(url, json={'opinion': 'dislike'})
+        await client.put(url, json={'opinion': 'dislike', 'user_id': user_id})
 
         response3 = await client.get(f'/service/v1/issue/{issue_id}/statistics'
                                      )
