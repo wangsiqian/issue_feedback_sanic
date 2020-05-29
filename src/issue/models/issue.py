@@ -40,6 +40,16 @@ class Issue(AioModel):
 
         return issue
 
+    async def handle_developer(self, developer_id):
+        developer_ids = list(self.developer_ids)
+        try:
+            developer_ids.remove(developer_id)
+        except ValueError:
+            # 如果不存在则添加
+            developer_ids.append(developer_id)
+
+        self.developer_ids = developer_ids
+
 
 class IssueByProduct(AioModel):
     """按产品分区

@@ -19,6 +19,7 @@ class IssueSerializer(Schema):
     owner_id = fields.UUID()
     title = fields.Str()
     description = fields.Str()
+    developer_ids = fields.List(cls_or_instance=fields.UUID)
     status = fields.Str()
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
@@ -84,3 +85,4 @@ class MultiQueryIssuesSerializer(Schema):
 
 class AssignIssueSerializer(Schema):
     issue_id = fields.UUID(required=True)
+    developer_id = fields.UUID(required=True)

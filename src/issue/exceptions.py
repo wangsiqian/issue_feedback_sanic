@@ -9,3 +9,8 @@ class IssueAlreadyExist(APIException):
 class StatisticsNotFount(APIException):
     error_type = 'statistics_not_found'
     error_message = '未找到该反馈的统计数据'
+
+
+class IssueNotFound(APIException):
+    error_type = 'issue_not_found'
+    error_message = '未找到该反馈'

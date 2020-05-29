@@ -131,3 +131,33 @@ class TestIssueService:
         # 返回一个反馈
         assert len(filtered_issues) == 1
         assert json_result2['result']['count'] == 2
+
+    async def test_assign_issue_to_developer(self, client):
+        issue_id = await IssueService.create_issue(client=client,
+                                                   product_id=str(
+                                                       uuid.uuid4()),
+                                                   owner_id=str(uuid.uuid4()),
+                                                   title='反馈1')
+
+        # 分配给开发者
+        url = f'/service/v1/issue/{issue_id}/assign'
+        develiper_id = 'c288acad-37c3-4b36-bf61-aada41fe1b8f'
+        response1 = await client.put(url, json={'developer_id': develiper_id})
+        assert response1.status == 200
+
+        json_result1 = await response1.json()
+        assert json_result1['ok']
+
+        issue = json_result1['result']
+        assert len(issue['developer_ids']) == 1
+        assert issue['developer_ids'][0] == develiper_id
+
+        # 再次分配
+        response2 = await client.put(url, json={'developer_id': develiper_id})
+        assert response2.status == 200
+
+        json_result2 = await response2.json()
+        assert json_result2['ok']
+
+        issue = json_result2['result']
+        assert len(issue['developer_ids']) == 0

@@ -1,12 +1,10 @@
-from issue.exceptions import StatisticsNotFount
+from issue.exceptions import IssueNotFound, StatisticsNotFount
 from issue.models.issue import (Issue, IssueByProduct, IssueVoteRecord,
                                 IssueVoteStatistics)
-from issue.models.serializers import (CreateIssueSerializer, IssueIdSerializer,
-                                      IssueSerializer,
-                                      IssueVoteRecordSerializer,
-                                      IssueVoteSerializer,
-                                      MultiQueryIssuesSerializer,
-                                      StatisticsSerializer)
+from issue.models.serializers import (
+    AssignIssueSerializer, CreateIssueSerializer, IssueIdSerializer,
+    IssueSerializer, IssueVoteRecordSerializer, IssueVoteSerializer,
+    MultiQueryIssuesSerializer, StatisticsSerializer)
 from libs.sanic_api.views import (GetView, ListView, PostView, PutView,
                                   ok_response)
 
@@ -100,3 +98,22 @@ class GetStatisticsByIssueIdService(GetView):
                 issue_id=self.validated_data['issue_id'])
         except IssueVoteStatistics.DoesNotExist:
             raise StatisticsNotFount
+
+
+class AssignIssueService(PutView):
+    """分配 issue
+    """
+    args_deserializer_class = AssignIssueSerializer
+    put_serializer_class = IssueSerializer
+
+    async def save(self):
+        try:
+            issue = await Issue.async_get(
+                issue_id=self.validated_data['issue_id'])
+        except Issue.DoesNotExist:
+            raise IssueNotFound
+
+        await issue.handle_developer(self.validated_data['developer_id'])
+        await issue.async_save()
+
+        return issue

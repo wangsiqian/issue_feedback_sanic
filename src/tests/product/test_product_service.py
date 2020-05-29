@@ -47,7 +47,7 @@ class TestProductService:
         await self._create_product(client, manager_id)
         await self._create_product(client, manager_id)
 
-        response = await client.get(f'/service/v1/products')
+        response = await client.get('/service/v1/products')
         assert response.status == 200
 
         json_result = await response.json()
