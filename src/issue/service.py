@@ -23,11 +23,12 @@ class CreateIssueService(PostView):
 
 
 class ListIssuesByProductIdService(ListView):
-    list_result_name = 'issues'
+    """根据产品信息获取反馈
+    """
     args_deserializer_class = MultiQueryIssuesSerializer
     list_serializer_class = IssueSerializer
 
-    async def filter_objects(self):
+    async def get_issues(self):
         # 查询该产品下有哪些 issue
         issues_by_product = await IssueByProduct.objects.filter(
             product_id=self.validated_data['product_id']).async_all()
@@ -49,18 +50,33 @@ class ListIssuesByProductIdService(ListView):
                                reverse=True)
         return sorted_issues
 
-    def response(self, results):
+    async def filter_objects(self):
+        issues = await self.get_issues()
+
+        result = {'issues': [], 'count': len(issues)}
         # 分页
         start = self.validated_data.get('start', 0)
         limit = self.validated_data.get('limit', 10)
+        serializer = self.list_serializer_class()
+        for issue in issues[start:start + limit]:
+            issue_map = serializer.dump(issue)
+            # 获取统计信息
+            try:
+                statistics = await IssueVoteStatistics.async_get(
+                    issue_id=issue.issue_id)
+            except IssueVoteStatistics.DoesNotExist:
+                issue_map.update({'likes': 0, 'dislikes': 0})
+            else:
+                issue_map.update({
+                    'likes': statistics.likes,
+                    'dislikes': statistics.dislikes,
+                })
+            result['issues'].append(issue_map)
 
-        _serializer = self.list_serializer_class()
-        return ok_response({
-            self.list_result_name:
-            _serializer.dump(results[start:start + limit], many=True),
-            'count':
-            len(results)
-        })
+        return result
+
+    def response(self, result):
+        return ok_response(result)
 
 
 class IssueVoteService(PutView):

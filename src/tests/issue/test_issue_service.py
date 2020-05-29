@@ -130,6 +130,7 @@ class TestIssueService:
         filtered_issues = json_result2['result']['issues']
         # 返回一个反馈
         assert len(filtered_issues) == 1
+        print(filtered_issues)
         assert json_result2['result']['count'] == 2
 
     async def test_assign_issue_to_developer(self, client):
