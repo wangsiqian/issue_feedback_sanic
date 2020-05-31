@@ -41,12 +41,16 @@ async def jwt_middleware(request: Request, required: bool, role_ids):
                                error_type='api_signature_invalid')
 
     payload = decode_token(raw_jwt)
+    if not isinstance(payload, dict):
+        # 解析失败
+        return payload
+
     if not required and not role_ids:
         # 无身份的 token，解析成功则不验证
         return None
 
-    role_id = payload.get('role_id')
     authenticate = True
+    role_id = payload.get('role_id')
     # 验证身份
     if required:
         if role_id not in config.ROLES:

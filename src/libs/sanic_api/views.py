@@ -11,10 +11,10 @@ from libs.sanic_api.exceptions import APIException, InvalidJSON
 logger = logging.getLogger('issue_feedback')
 
 
-def ok_response(body, message="", *args, **kwargs):
+def ok_response(body, *args, **kwargs):
     """成功的 response
     """
-    new_body = {'ok': True, 'message': message, 'result': body}
+    new_body = {'ok': True, 'result': body}
     return json(new_body, *args, **kwargs)
 
 
