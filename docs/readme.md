@@ -16,7 +16,6 @@
 正确响应: 
 ```json
 {
-  "message": "",
   "ok": true,
   "result": {}
 }

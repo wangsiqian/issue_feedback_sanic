@@ -1,5 +1,7 @@
 from random import randint
 
+from tests.profile.test_profile_service import ProfileService
+
 
 class AccountService:
     @classmethod
@@ -42,7 +44,11 @@ class AccountService:
         json_result = await response.json()
         assert json_result['ok']
 
-        return json_result['result']['token']
+        # 创建资料
+        await ProfileService.create_profile(
+            client, user_id=json_result['result']['user_id'])
+
+        return json_result['result']
 
 
 class TestAccountService:

@@ -16,13 +16,16 @@ class IssueSerializer(Schema):
     """序列化反馈返回的数据
     """
     issue_id = fields.UUID()
-    owner_id = fields.UUID()
+    owner = fields.Method('get_owner')
     title = fields.Str()
     description = fields.Str()
     developer_ids = fields.List(cls_or_instance=fields.UUID)
     status = fields.Str()
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
+
+    def get_owner(self, issue):
+        return {'nickname': issue.owner.nickname, 'avatar': issue.owner.avatar}
 
 
 class IssueVoteSerializer(Schema):

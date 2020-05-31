@@ -1,5 +1,7 @@
 import uuid
 
+from tests.profile.test_profile_service import ProfileService
+
 
 class IssueService:
     @classmethod
@@ -24,6 +26,8 @@ class TestIssueService:
 
         product_id = str(uuid.uuid4())
         owner_id = str(uuid.uuid4())
+        await ProfileService.create_profile(client, owner_id)
+
         response = await client.post(url,
                                      json={
                                          'product_id': product_id,
@@ -42,6 +46,8 @@ class TestIssueService:
 
     async def test_user_vote_for_issue(self, client):
         user_id = str(uuid.uuid4())
+        await ProfileService.create_profile(client, user_id)
+
         issue_id = await IssueService.create_issue(client=client,
                                                    product_id=str(
                                                        uuid.uuid4()),
@@ -90,20 +96,23 @@ class TestIssueService:
 
     async def test_list_issues_by_product_id(self, client):
         product_id = str(uuid.uuid4())
+        owner_id = str(uuid.uuid4())
+        await ProfileService.create_profile(client, owner_id)
+
         # 创建两个反馈
         await IssueService.create_issue(client=client,
                                         product_id=product_id,
-                                        owner_id=str(uuid.uuid4()),
+                                        owner_id=owner_id,
                                         title='反馈1')
         await IssueService.create_issue(client=client,
                                         product_id=product_id,
-                                        owner_id=str(uuid.uuid4()),
+                                        owner_id=owner_id,
                                         title='反馈2')
 
         # 另一个产品的反馈
         await IssueService.create_issue(client=client,
                                         product_id=str(uuid.uuid4()),
-                                        owner_id=str(uuid.uuid4()),
+                                        owner_id=owner_id,
                                         title='反馈2')
 
         response = await client.get(
@@ -114,6 +123,7 @@ class TestIssueService:
         assert json_result['ok']
 
         issues = json_result['result']['issues']
+        print(issues)
         # 返回两个反馈
         assert len(issues) == 2
         assert json_result['result']['count'] == 2
@@ -134,16 +144,19 @@ class TestIssueService:
         assert json_result2['result']['count'] == 2
 
     async def test_assign_issue_to_developer(self, client):
+        owner_id = str(uuid.uuid4())
+        await ProfileService.create_profile(client, owner_id)
+
         issue_id = await IssueService.create_issue(client=client,
                                                    product_id=str(
                                                        uuid.uuid4()),
-                                                   owner_id=str(uuid.uuid4()),
+                                                   owner_id=owner_id,
                                                    title='反馈1')
 
         # 分配给开发者
         url = f'/service/v1/issue/{issue_id}/assign'
-        develiper_id = 'c288acad-37c3-4b36-bf61-aada41fe1b8f'
-        response1 = await client.put(url, json={'developer_id': develiper_id})
+        developer_id = 'c288acad-37c3-4b36-bf61-aada41fe1b8f'
+        response1 = await client.put(url, json={'developer_id': developer_id})
         assert response1.status == 200
 
         json_result1 = await response1.json()
@@ -151,10 +164,10 @@ class TestIssueService:
 
         issue = json_result1['result']
         assert len(issue['developer_ids']) == 1
-        assert issue['developer_ids'][0] == develiper_id
+        assert issue['developer_ids'][0] == developer_id
 
         # 再次分配
-        response2 = await client.put(url, json={'developer_id': develiper_id})
+        response2 = await client.put(url, json={'developer_id': developer_id})
         assert response2.status == 200
 
         json_result2 = await response2.json()

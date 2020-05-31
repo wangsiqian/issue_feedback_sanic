@@ -22,18 +22,17 @@ class TestIssueApi:
         url = '/v1/issue'
 
         product_id = str(uuid.uuid4())
-        owner_id = str(uuid.uuid4())
 
         # 获取用户身份的token
-        token = await AccountService.get_token(client, app.config.ROLE_USER)
+        user = await AccountService.get_token(client, app.config.ROLE_USER)
         response = await client.post(url,
                                      json={
                                          'product_id': product_id,
-                                         'owner_id': owner_id,
+                                         'owner_id': user['user_id'],
                                          'title': '反馈标题',
                                          'description': 'description'
                                      },
-                                     headers={'Authorization': token})
+                                     headers={'Authorization': user['token']})
         assert response.status == 200
 
         json_result = await response.json()
@@ -44,7 +43,7 @@ class TestIssueApi:
             url,
             json={
                 'product_id': product_id,
-                'owner_id': owner_id,
+                'owner_id': str(uuid.uuid4()),
                 'title': '反馈标题'
             },
             headers={'Authorization': await generate_token(10)})
