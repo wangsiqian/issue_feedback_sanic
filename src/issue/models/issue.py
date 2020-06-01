@@ -1,11 +1,12 @@
 import uuid
 from datetime import datetime
-
-from cassandra.cqlengine import columns, usertype
-from libs.aiocqlengine.columns import UserDefinedType
-from libs.aiocqlengine.models import AioModel
 from profile.exceptions import ProfileNotFound
 from profile.models.profile import Profile
+
+from cassandra.cqlengine import columns, usertype
+
+from libs.aiocqlengine.columns import UserDefinedType
+from libs.aiocqlengine.models import AioModel
 
 
 class Owner(usertype.UserType):
