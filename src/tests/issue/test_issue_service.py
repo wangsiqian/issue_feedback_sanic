@@ -1,7 +1,5 @@
 import uuid
 
-from tests.profile.test_profile_service import ProfileService
-
 
 class IssueService:
     @classmethod
@@ -26,8 +24,6 @@ class TestIssueService:
 
         product_id = str(uuid.uuid4())
         owner_id = str(uuid.uuid4())
-        await ProfileService.create_profile(client, owner_id)
-
         response = await client.post(url,
                                      json={
                                          'product_id': product_id,
@@ -46,8 +42,6 @@ class TestIssueService:
 
     async def test_user_vote_for_issue(self, client):
         user_id = str(uuid.uuid4())
-        await ProfileService.create_profile(client, user_id)
-
         issue_id = await IssueService.create_issue(client=client,
                                                    product_id=str(
                                                        uuid.uuid4()),
@@ -97,8 +91,6 @@ class TestIssueService:
     async def test_list_issues_by_product_id(self, client):
         product_id = str(uuid.uuid4())
         owner_id = str(uuid.uuid4())
-        await ProfileService.create_profile(client, owner_id)
-
         # 创建两个反馈
         await IssueService.create_issue(client=client,
                                         product_id=product_id,
@@ -145,8 +137,6 @@ class TestIssueService:
 
     async def test_assign_issue_to_developer(self, client):
         owner_id = str(uuid.uuid4())
-        await ProfileService.create_profile(client, owner_id)
-
         issue_id = await IssueService.create_issue(client=client,
                                                    product_id=str(
                                                        uuid.uuid4()),

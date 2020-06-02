@@ -1,6 +1,7 @@
 from marshmallow import Schema, ValidationError, fields, validates
 
 from issue.models.issue import Issue
+from profile.models.profile import Profile
 
 
 class CreateIssueSerializer(Schema):
@@ -25,7 +26,12 @@ class IssueSerializer(Schema):
     updated_at = fields.DateTime()
 
     def get_owner(self, issue):
-        return {'nickname': issue.owner.nickname, 'avatar': issue.owner.avatar}
+        try:
+            owner = Profile.get(user_id=issue.owner_id)
+        except Profile.DoesNotExist:
+            return {}
+        else:
+            return {'nickname': owner.nickname, 'avatar': owner.avatar}
 
 
 class IssueVoteSerializer(Schema):

@@ -44,11 +44,7 @@ class AccountService:
         json_result = await response.json()
         assert json_result['ok']
 
-        # 创建资料
-        await ProfileService.create_profile(
-            client, user_id=json_result['result']['user_id'])
-
-        return json_result['result']
+        return json_result['result']['token']
 
 
 class TestAccountService:

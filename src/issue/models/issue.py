@@ -1,18 +1,9 @@
 import uuid
 from datetime import datetime
-from profile.exceptions import ProfileNotFound
-from profile.models.profile import Profile
 
-from cassandra.cqlengine import columns, usertype
+from cassandra.cqlengine import columns
 
-from libs.aiocqlengine.columns import UserDefinedType
 from libs.aiocqlengine.models import AioModel
-
-
-class Owner(usertype.UserType):
-    owner_id = columns.UUID()
-    nickname = columns.Text()
-    avatar = columns.Text()
 
 
 class Issue(AioModel):
@@ -24,7 +15,7 @@ class Issue(AioModel):
     STATUS_CLOSED = 'closed'
 
     issue_id = columns.UUID(primary_key=True)
-    owner = UserDefinedType(Owner)
+    owner_id = columns.UUID()
     title = columns.Text()
     description = columns.Text()
 
@@ -37,20 +28,9 @@ class Issue(AioModel):
 
     @classmethod
     async def new(cls, product_id, owner_id, title, description):
-        try:
-            # 获取用户资料
-            profile = await Profile.async_get(user_id=owner_id)
-        except Profile.DoesNotExist:
-            raise ProfileNotFound
-
-        owner = Owner()
-        owner.owner_id = owner_id
-        owner.avatar = profile.avatar
-        owner.nickname = profile.nickname
-
         issue_id = str(uuid.uuid4())
         issue = await Issue.async_create(issue_id=issue_id,
-                                         owner=owner,
+                                         owner_id=owner_id,
                                          title=title,
                                          description=description)
 
