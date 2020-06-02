@@ -1,5 +1,6 @@
 from issue.service import (AssignIssueService, CreateIssueService,
-                           IssueVoteService, ListIssuesByProductIdService)
+                           IssueVoteService, ListIssuesByProductIdService,
+                           UpdateIssueTagService)
 
 
 class CreateIssueApi(CreateIssueService):
@@ -16,3 +17,7 @@ class ListIssuesByProductIdApi(ListIssuesByProductIdService):
 
 class AssignIssueApi(AssignIssueService):
     put_serializer_class = None
+
+
+class UpdateIssueTagApi(UpdateIssueTagService):
+    pass

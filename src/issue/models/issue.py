@@ -19,6 +19,7 @@ class Issue(AioModel):
     title = columns.Text()
     description = columns.Text()
 
+    tags = columns.List(value_type=columns.Text)
     developer_ids = columns.List(value_type=columns.UUID)
     # 默认开放
     status = columns.Text(default=STATUS_OPENING, index=True)
@@ -49,6 +50,18 @@ class Issue(AioModel):
             developer_ids.append(developer_id)
 
         self.developer_ids = developer_ids
+
+    async def handle_tags(self, tags_name):
+        tags = list(self.tags)
+        for tag_name in tags_name:
+            # 批量添加或删除标签
+            try:
+                tags.remove(tag_name)
+            except ValueError:
+                tags.append(tag_name)
+
+        self.tags = tags
+        await self.async_save()
 
 
 class IssueByProduct(AioModel):

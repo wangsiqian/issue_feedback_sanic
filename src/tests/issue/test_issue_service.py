@@ -1,5 +1,7 @@
 import uuid
 
+from tests.tag.test_tag_service import TagService
+
 
 class IssueService:
     @classmethod
@@ -17,8 +19,17 @@ class IssueService:
 
         return json_result['result']['issue_id']
 
+    async def get_issue(self, client, issue_id):
+        response = await client.get(f'/service/v1/issue/{issue_id}')
+        assert response.status == 200
 
-class TestIssueService:
+        json_result = await response.json()
+        assert json_result['ok']
+
+        return json_result['result']
+
+
+class TestIssueService(IssueService, TagService):
     async def test_create_issue(self, client):
         url = '/service/v1/issue'
 
@@ -42,11 +53,10 @@ class TestIssueService:
 
     async def test_user_vote_for_issue(self, client):
         user_id = str(uuid.uuid4())
-        issue_id = await IssueService.create_issue(client=client,
-                                                   product_id=str(
-                                                       uuid.uuid4()),
-                                                   owner_id=user_id,
-                                                   title='反馈')
+        issue_id = await self.create_issue(client=client,
+                                           product_id=str(uuid.uuid4()),
+                                           owner_id=user_id,
+                                           title='反馈')
 
         url = f'/service/v1/issue/{issue_id}/vote'
         # 投票
@@ -92,20 +102,20 @@ class TestIssueService:
         product_id = str(uuid.uuid4())
         owner_id = str(uuid.uuid4())
         # 创建两个反馈
-        await IssueService.create_issue(client=client,
-                                        product_id=product_id,
-                                        owner_id=owner_id,
-                                        title='反馈1')
-        await IssueService.create_issue(client=client,
-                                        product_id=product_id,
-                                        owner_id=owner_id,
-                                        title='反馈2')
+        await self.create_issue(client=client,
+                                product_id=product_id,
+                                owner_id=owner_id,
+                                title='反馈1')
+        await self.create_issue(client=client,
+                                product_id=product_id,
+                                owner_id=owner_id,
+                                title='反馈2')
 
         # 另一个产品的反馈
-        await IssueService.create_issue(client=client,
-                                        product_id=str(uuid.uuid4()),
-                                        owner_id=owner_id,
-                                        title='反馈2')
+        await self.create_issue(client=client,
+                                product_id=str(uuid.uuid4()),
+                                owner_id=owner_id,
+                                title='反馈2')
 
         response = await client.get(
             f'/service/v1/issue/product/{product_id}?status=opening')
@@ -137,11 +147,10 @@ class TestIssueService:
 
     async def test_assign_issue_to_developer(self, client):
         owner_id = str(uuid.uuid4())
-        issue_id = await IssueService.create_issue(client=client,
-                                                   product_id=str(
-                                                       uuid.uuid4()),
-                                                   owner_id=owner_id,
-                                                   title='反馈1')
+        issue_id = await self.create_issue(client=client,
+                                           product_id=str(uuid.uuid4()),
+                                           owner_id=owner_id,
+                                           title='反馈1')
 
         # 分配给开发者
         url = f'/service/v1/issue/{issue_id}/assign'
@@ -165,3 +174,43 @@ class TestIssueService:
 
         issue = json_result2['result']
         assert len(issue['developer_ids']) == 0
+
+    async def test_update_issue_tags(self, client):
+        # 创建标签
+        await self.create_tag(client, 'Bug', 'Bug')
+        await self.create_tag(client, 'Help', 'Help')
+        await self.create_tag(client, 'Enhancement', 'Enhancement')
+
+        issue_id = await self.create_issue(client,
+                                           product_id=str(uuid.uuid4()),
+                                           owner_id=str(uuid.uuid4()),
+                                           title='产品有 bug')
+        url = f'/service/v1/issue/{issue_id}/tag'
+        response = await client.put(url, json={'tags_name': ['Bug', 'Help']})
+        assert response.status == 200
+        json_result = await response.json()
+        assert json_result['ok']
+
+        # 查询 issue
+        issue = await self.get_issue(client, issue_id)
+        tags = issue['tags']
+        assert len(tags) == 3
+        assert tags[0]['name'] == 'Bug'
+        assert tags[0]['checked'] is True
+        assert tags[1]['name'] == 'Help'
+        assert tags[1]['checked'] is True
+        assert tags[2]['name'] == 'Enhancement'
+        assert tags[2]['checked'] is False
+
+        # 再次更新
+        await client.put(url,
+                         json={'tags_name': ['Bug', 'Help', 'Enhancement']})
+
+        issue = await self.get_issue(client, issue_id)
+        tags = issue['tags']
+        assert tags[0]['name'] == 'Enhancement'
+        assert tags[0]['checked'] is True
+        assert tags[1]['name'] == 'Bug'
+        assert tags[1]['checked'] is False
+        assert tags[2]['name'] == 'Help'
+        assert tags[2]['checked'] is False

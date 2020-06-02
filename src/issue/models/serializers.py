@@ -2,6 +2,7 @@ from marshmallow import Schema, ValidationError, fields, validates
 
 from issue.models.issue import Issue
 from profile.models.profile import Profile
+from tag.models.tag import Tag
 
 
 class CreateIssueSerializer(Schema):
@@ -18,6 +19,7 @@ class IssueSerializer(Schema):
     """
     issue_id = fields.UUID()
     owner = fields.Method('get_owner')
+    tags = fields.Method('get_tags')
     title = fields.Str()
     description = fields.Str()
     developer_ids = fields.List(cls_or_instance=fields.UUID)
@@ -32,6 +34,26 @@ class IssueSerializer(Schema):
             return {}
         else:
             return {'nickname': owner.nickname, 'avatar': owner.avatar}
+
+    def get_tags(self, issue):
+        result = []
+        checked_tags = list(issue.tags)
+        tags = Tag.all()
+        for tag in tags:
+            try:
+                checked_tags.index(tag.name)
+            except ValueError:
+                checked = False
+            else:
+                checked = True
+
+            result.append({
+                'name': tag.name,
+                'description': tag.description,
+                'checked': checked
+            })
+
+        return sorted(result, key=lambda _tag: _tag['checked'], reverse=True)
 
 
 class IssueVoteSerializer(Schema):
@@ -93,5 +115,14 @@ class MultiQueryIssuesSerializer(Schema):
 
 
 class AssignIssueSerializer(Schema):
+    """委派给开发人员
+    """
     issue_id = fields.UUID(required=True)
     developer_id = fields.UUID(required=True)
+
+
+class UpdateIssueTagSerializer(Schema):
+    """更新 issue 标签
+    """
+    issue_id = fields.UUID(required=True)
+    tags_name = fields.List(cls_or_instance=fields.Str, required=True)

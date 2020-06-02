@@ -4,7 +4,7 @@ from issue.models.issue import (Issue, IssueByProduct, IssueVoteRecord,
 from issue.models.serializers import (
     AssignIssueSerializer, CreateIssueSerializer, IssueIdSerializer,
     IssueSerializer, IssueVoteRecordSerializer, IssueVoteSerializer,
-    MultiQueryIssuesSerializer, StatisticsSerializer)
+    MultiQueryIssuesSerializer, StatisticsSerializer, UpdateIssueTagSerializer)
 from libs.sanic_api.views import (GetView, ListView, PostView, PutView,
                                   ok_response)
 
@@ -131,5 +131,39 @@ class AssignIssueService(PutView):
 
         await issue.handle_developer(self.validated_data['developer_id'])
         await issue.async_save()
+
+        return issue
+
+
+class UpdateIssueTagService(PutView):
+    """更新 issue 的标签
+    """
+    args_deserializer_class = UpdateIssueTagSerializer
+    put_serializer_class = None
+
+    async def save(self):
+        try:
+            issue = await Issue.async_get(
+                issue_id=self.validated_data['issue_id'])
+        except Issue.DoesNotExist:
+            raise IssueNotFound
+
+        await issue.handle_tags(self.validated_data['tags_name'])
+
+        return issue
+
+
+class GetIssueById(GetView):
+    """通过 issue id 获取 issue
+    """
+    args_deserializer_class = IssueIdSerializer
+    get_serializer_class = IssueSerializer
+
+    async def get_object(self):
+        try:
+            issue = await Issue.async_get(
+                issue_id=self.validated_data['issue_id'])
+        except Issue.DoesNotExist:
+            raise IssueNotFound
 
         return issue
