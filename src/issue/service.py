@@ -153,7 +153,7 @@ class UpdateIssueTagService(PutView):
         return issue
 
 
-class GetIssueById(GetView):
+class GetIssueByIdService(GetView):
     """通过 issue id 获取 issue
     """
     args_deserializer_class = IssueIdSerializer

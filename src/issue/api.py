@@ -1,6 +1,6 @@
 from issue.service import (AssignIssueService, CreateIssueService,
                            IssueVoteService, ListIssuesByProductIdService,
-                           UpdateIssueTagService)
+                           UpdateIssueTagService, GetIssueByIdService)
 
 
 class CreateIssueApi(CreateIssueService):
@@ -20,4 +20,8 @@ class AssignIssueApi(AssignIssueService):
 
 
 class UpdateIssueTagApi(UpdateIssueTagService):
+    pass
+
+
+class GetIssueByIdApi(GetIssueByIdService):
     pass
