@@ -41,7 +41,7 @@ class ListCommentsSerializer(Schema):
             return {}
         else:
             return {
-                'user_id': comment.user_id,
+                'user_id': str(comment.user_id),
                 'nickname': profile.nickname,
                 'avatar': profile.avatar
             }
