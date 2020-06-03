@@ -1,10 +1,11 @@
+from issue.models.serializers import IssueIdSerializer
 from issue.service import (AssignIssueService, CreateIssueService,
                            IssueVoteService, ListIssuesByProductIdService,
                            UpdateIssueTagService, GetIssueByIdService)
 
 
 class CreateIssueApi(CreateIssueService):
-    post_serializer_class = None
+    post_serializer_class = IssueIdSerializer
 
 
 class IssueVoteApi(IssueVoteService):

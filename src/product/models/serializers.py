@@ -23,3 +23,7 @@ class ManagerIdSerializer(Schema):
     """反序列化产品ID
     """
     manager_id = fields.UUID(required=True)
+
+
+class ProductIdSerializer(Schema):
+    product_id = fields.UUID()
