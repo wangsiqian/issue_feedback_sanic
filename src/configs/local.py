@@ -4,7 +4,7 @@ STAGE = 'local'
 
 # sanic server config
 HOST = '127.0.0.1'
-PORT = 8088
+PORT = 8923
 WORKERS = 4
 
 # cassandra config

@@ -14,10 +14,11 @@ config = app.config
 
 comment_api_blueprint = Blueprint('comment_api', version='1')
 
-api_urls = [('/comment',
-             jwt_wrapper(api.CreateCommentApi.as_view(),
-                         required=True), ['POST']),
-            ('/comments/<issue_id>', api.CreateCommentApi.as_view(), ['GET'])]
+api_urls = [
+    ('/comment', jwt_wrapper(api.CreateCommentApi.as_view(),
+                             required=True), ['POST']),
+    ('/comments/<issue_id>', api.ListCommentsByIssueIdApi.as_view(), ['GET'])
+]
 for url, view, methods in api_urls:
     comment_api_blueprint.add_route(view, url, methods=methods)
 
