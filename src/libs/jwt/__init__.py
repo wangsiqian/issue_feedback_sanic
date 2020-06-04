@@ -21,7 +21,7 @@ def decode_token(token):
         payload = jwt.decode(token,
                              key=config.JWT_SECRET,
                              algorithms=['HS256'])
-    except jwt.ExpiredSignatureError:
+    except jwt.PyJWTError:
         # jwt 默认使用 payload 中的 exp 字段来验证是否过期, 类型是 timestamp
         return failed_response(error_message='此请求已过期',
                                error_type='api_signature_expired')
