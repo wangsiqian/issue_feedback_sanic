@@ -1,6 +1,7 @@
 from account.models.serializers import (CreateAccountApiSerializer,
                                         ValidationTokenSerializer)
-from account.service import CreateAccountService, LoginService, SendCodeService
+from account.service import (CreateAccountService, GetRoleIdService,
+                             LoginService, SendCodeService)
 from app import app
 
 
@@ -21,3 +22,7 @@ class LoginApi(LoginService):
 
 class SendCodeApi(SendCodeService):
     post_serializer_class = ValidationTokenSerializer
+
+
+class GetRoleIdApi(GetRoleIdService):
+    pass

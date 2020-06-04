@@ -70,3 +70,15 @@ class ValidationTokenSerializer(Schema):
     """序列化邮箱验证生成的 token 数据
     """
     validate_token = fields.Str()
+
+
+class UserIdSerializer(Schema):
+    """反序列化用户ID
+    """
+    user_id = fields.UUID(required=True)
+
+
+class RoleIdSerializer(Schema):
+    """获取身份
+    """
+    role_id = fields.Str()

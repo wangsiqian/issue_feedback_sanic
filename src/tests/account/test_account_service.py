@@ -121,3 +121,24 @@ class TestAccountService:
         error_result = await error_response.json()
         assert error_result['error_type'] == 'password_wrong'
         assert error_result['message'] == '密码错误'
+
+    async def test_get_role_id(self, client):
+        account_id = '123456789@qq.com'
+        password = '123456789@qq.com'
+        # 创建账号
+        await AccountService.create_account(client, account_id, password,
+                                            'USER')
+        # 登陆
+        response = await client.post('/service/v1/login',
+                                     json={
+                                         'account_id': account_id,
+                                         'password': password
+                                     })
+        assert response.status == 200
+        json_result = await response.json()
+        user_id = json_result['result']['user_id']
+
+        response1 = await client.get(f'/service/v1/account/{user_id}/role')
+        assert response.status == 200
+        json_result = await response1.json()
+        assert json_result['result']['role_id'] == 'USER'

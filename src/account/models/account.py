@@ -14,7 +14,7 @@ class Account(AioModel):
     __table_name__ = 'account'
 
     account_id = columns.Text(primary_key=True)
-    user_id = columns.UUID(required=True)
+    user_id = columns.UUID(required=True, index=True)
     password = columns.Bytes(required=True)
     salt = columns.Bytes(required=True)
 

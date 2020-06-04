@@ -10,11 +10,12 @@ from account.exceptions import (AccountAlreadyExist, AccountNotFound,
 from account.models.account import Account, CodeRecord
 from account.models.serializers import (AccountIdSerializer,
                                         CreateAccountServiceSerializer,
-                                        LoginSerializer, SessionSerializer,
+                                        LoginSerializer, RoleIdSerializer,
+                                        SessionSerializer, UserIdSerializer,
                                         ValidationSerializer)
 from app import app
 from libs.jwt import decode_token, generate_token
-from libs.sanic_api.views import PostView
+from libs.sanic_api.views import GetView, PostView
 
 
 class CreateAccountService(PostView):
@@ -117,3 +118,15 @@ class LoginService(PostView):
             'user_id': account.user_id,
             'role_id': account.role_id
         }
+
+
+class GetRoleIdService(GetView):
+    args_deserializer_class = UserIdSerializer
+    get_serializer_class = RoleIdSerializer
+
+    async def get_object(self):
+        try:
+            return await Account.async_get(
+                user_id=self.validated_data['user_id'])
+        except Account.DoesNotExist:
+            raise AccountNotFound

@@ -1,4 +1,5 @@
 from random import randint
+
 from tests.docs import api_docs
 
 
