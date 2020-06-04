@@ -165,12 +165,16 @@ class IssueVoteStatistics(AioModel):
 
     @classmethod
     async def change_opinion(cls, issue_id, old_opinion, new_opinion):
+        new_statistics = {}
         # 更改看法
         old_field = cls.OPINION_TO_FIELD.get(old_opinion)
+        if old_field:
+            new_statistics.update({old_field: -1})
+
         new_field = cls.OPINION_TO_FIELD.get(new_opinion)
-        if old_field and new_field:
+        if new_field:
+            new_statistics.update({new_field: 1})
+
+        if new_statistics:
             await IssueVoteStatistics(issue_id=issue_id
-                                      ).async_update(**{
-                                          old_field: -1,
-                                          new_field: 1
-                                      })
+                                      ).async_update(**new_statistics)
