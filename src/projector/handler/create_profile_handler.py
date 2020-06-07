@@ -17,15 +17,14 @@ class CreateProfileHandler(BaseEventHandler):
             logger.error(f'Invalid event with message {self.message}')
             return
 
-        response = requests.post(url=f'{config.CREATE_PROFILE_URL}',
-                                 json={
-                                     'nickname':
-                                     'user@' +
-                                     str(randint(0, 999999)).zfill(6),
-                                     'user_id':
-                                     user_id
-                                 },
-                                 timeout=5)
+        response = requests.post(
+            url=f'{config.CREATE_PROFILE_URL}',
+            json={
+                'nickname': 'user@' + str(randint(0, 999999)).zfill(6),
+                'user_id': user_id,
+                'role_id': self.message.get('role_id', config.ROLE_USER)
+            },
+            timeout=5)
 
         if response.status_code == 200:
             payload = response.json()

@@ -1,4 +1,6 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validates, ValidationError
+
+from app import app
 
 
 class CreateProfileSerializer(Schema):
@@ -7,6 +9,12 @@ class CreateProfileSerializer(Schema):
     user_id = fields.UUID(required=True)
     nickname = fields.Str(required=True)
     gender = fields.Integer(missing=1)
+    role_id = fields.Str(missing=app.config.ROLE_USER)
+
+    @validates('role_id')
+    def validate_role_id(self, value):
+        if value not in app.config.ROLES:
+            raise ValidationError('有内鬼，中止交易！')
 
 
 class UpdateProfileSerializer(Schema):
@@ -24,6 +32,7 @@ class ProfileSerializer(Schema):
     gender = fields.Integer()
     nickname = fields.Str()
     avatar = fields.Str()
+    role_id = fields.Str()
 
 
 class UserIdSerializer(Schema):

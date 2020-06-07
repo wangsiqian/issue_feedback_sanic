@@ -41,6 +41,7 @@ class Account(AioModel):
         await app.exchange.publish(
             Message(ujson.dumps({
                 'user_id': user_id,
+                'role_id': role_id,
                 'event': 'create_profile'
             }).encode(),
                     content_type='application/json'),

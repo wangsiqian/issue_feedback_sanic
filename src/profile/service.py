@@ -21,7 +21,8 @@ class CreateProfileService(PostView):
         except Profile.DoesNotExist:
             return await Profile.new(user_id=user_id,
                                      nickname=self.validated_data['nickname'],
-                                     gender=self.validated_data['gender'])
+                                     gender=self.validated_data['gender'],
+                                     role_id=self.validated_data['role_id'])
 
         raise ProfileAlreadyExist
 
