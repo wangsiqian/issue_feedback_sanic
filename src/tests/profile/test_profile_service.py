@@ -3,13 +3,14 @@ import uuid
 
 class ProfileService:
     @classmethod
-    async def create_profile(cls, client, user_id):
+    async def create_profile(cls, client, user_id, nickname, role_id):
         url = '/service/v1/profile'
 
         await client.post(url,
                           json={
                               'user_id': user_id,
-                              'nickname': 'tester',
+                              'nickname': nickname,
+                              'role_id': role_id
                           })
 
 

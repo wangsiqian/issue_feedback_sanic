@@ -146,6 +146,18 @@ class DatabaseManagement(metaclass=Singleton):
         for model in table_models:
             management.sync_table(model)
 
+        management.execute("""
+            CREATE CUSTOM INDEX idx_nickname ON profile(nickname)
+            USING 'org.apache.cassandra.index.sasi.SASIIndex'
+            WITH OPTIONS = { 'mode': 'CONTAINS' }
+        """)
+
+        management.execute("""
+            CREATE CUSTOM INDEX idx_role_id ON profile(role_id)
+            USING 'org.apache.cassandra.index.sasi.SASIIndex'
+            WITH OPTIONS = { 'mode': 'CONTAINS' }
+        """)
+
     def drop_db(self):
         """删除数据表, 单元测试时使用
         """

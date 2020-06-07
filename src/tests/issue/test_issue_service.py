@@ -1,5 +1,7 @@
 import uuid
 
+from app import app
+from tests.profile.test_profile_service import ProfileService
 from tests.tag.test_tag_service import TagService
 
 
@@ -29,7 +31,7 @@ class IssueService:
         return json_result['result']
 
 
-class TestIssueService(IssueService, TagService):
+class TestIssueService(IssueService, TagService, ProfileService):
     async def test_create_issue(self, client):
         url = '/service/v1/issue'
 
@@ -214,3 +216,32 @@ class TestIssueService(IssueService, TagService):
         assert tags[1]['checked'] is False
         assert tags[2]['name'] == 'Help'
         assert tags[2]['checked'] is False
+
+    async def test_list_developers(self, client):
+        await self.create_profile(client, str(uuid.uuid4()), 'tester1',
+                                  app.config.ROLE_DEVELOPER)
+        await self.create_profile(client, str(uuid.uuid4()), 'tester2',
+                                  app.config.ROLE_DEVELOPER)
+        await self.create_profile(client, str(uuid.uuid4()), 'tester3',
+                                  app.config.ROLE_DEVELOPER)
+        await self.create_profile(client, str(uuid.uuid4()), 'tester4',
+                                  app.config.ROLE_DEVELOPER)
+
+        issue_id = await self.create_issue(client, str(uuid.uuid4()),
+                                           str(uuid.uuid4()), '有问题')
+        url = f'/service/v1/issue/{issue_id}/developers'
+        response1 = await client.get(url)
+        assert response1.status == 200
+
+        json_result2 = await response1.json()
+        assert json_result2['ok']
+        developers = json_result2['result']['developers']
+        assert len(developers) == 4
+
+        response2 = await client.get(f'{url}?nickname=ter1')
+        assert response2.status == 200
+
+        json_result2 = await response2.json()
+        assert json_result2['ok']
+        developers = json_result2['result']['developers']
+        assert len(developers) == 1

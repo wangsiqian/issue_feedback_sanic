@@ -1,12 +1,15 @@
+from app import app
 from issue.exceptions import IssueNotFound, StatisticsNotFount
 from issue.models.issue import (Issue, IssueByProduct, IssueVoteRecord,
                                 IssueVoteStatistics)
 from issue.models.serializers import (
     AssignIssueSerializer, CreateIssueSerializer, IssueIdSerializer,
     IssueSerializer, IssueVoteRecordSerializer, IssueVoteSerializer,
-    MultiQueryIssuesSerializer, StatisticsSerializer, UpdateIssueTagSerializer)
+    MultiQueryIssuesSerializer, StatisticsSerializer, UpdateIssueTagSerializer,
+    MultiGetDeveloperSerializer, DeveloperSerializer)
 from libs.sanic_api.views import (GetView, ListView, PostView, PutView,
                                   ok_response)
+from profile.models.profile import Profile
 
 
 class CreateIssueService(PostView):
@@ -167,3 +170,57 @@ class GetIssueByIdService(GetView):
             raise IssueNotFound
 
         return issue
+
+
+class ListDevelopersByIssueService(ListView):
+    """列出某个反馈里面没有被选中的开发人员
+    """
+    args_deserializer_class = MultiGetDeveloperSerializer
+    list_serializer_class = DeveloperSerializer
+
+    async def get_developers(self):
+        nickname = self.validated_data['nickname']
+        if nickname:
+            rows = await app.cassandra.execute_future(
+                """
+                SELECT *
+                FROM profile
+                WHERE role_id = %s
+                AND nickname LIKE %s ALLOW FILTERING
+                """, (app.config.ROLE_DEVELOPER, f'%{nickname}%'))
+        else:
+            rows = await Profile.objects.filter(
+                role_id=app.config.ROLE_DEVELOPER).async_all()
+
+        return list(rows)
+
+    async def filter_objects(self):
+        try:
+            issue = await Issue.async_get(
+                issue_id=self.validated_data['issue_id'])
+        except Issue.DoesNotExist:
+            raise IssueNotFound
+
+        developers = await self.get_developers()
+        for developer_id in issue.developer_ids:
+            # 移除已经被选中的developer
+            try:
+                profile = await Profile.async_get(user_id=developer_id)
+            except Profile.DoesNotExist:
+                continue
+
+            try:
+                developers.remove(profile)
+            except ValueError:
+                pass
+
+        return developers
+
+    def response(self, results):
+        _serializer = self.list_serializer_class()
+        profile = results[self.validated_data.get('start', 0):self.
+                          validated_data.get('limit', 15)]
+        return ok_response({
+            'developers': _serializer.dump(profile, many=True),
+            'count': len(results)
+        })

@@ -55,6 +55,21 @@ class IssueSerializer(Schema):
 
         return sorted(result, key=lambda _tag: _tag['checked'], reverse=True)
 
+    def get_developers(self, issue):
+        result = []
+        checked_developer_ids = list(issue.developer_ids)
+        for developer_id in checked_developer_ids:
+            try:
+                profile = Profile.get(user_id=developer_id)
+            except Profile.DoesNotExist:
+                continue
+
+            result.append({
+                'user_id': profile.user_id,
+                'nickname': profile.nickname
+            })
+        return result
+
 
 class IssueVoteSerializer(Schema):
     """反序列化对反馈投票的数据
@@ -126,3 +141,15 @@ class UpdateIssueTagSerializer(Schema):
     """
     issue_id = fields.UUID(required=True)
     tags_name = fields.List(cls_or_instance=fields.Str, required=True)
+
+
+class DeveloperSerializer(Schema):
+    user_id = fields.UUID()
+    nickname = fields.Str()
+
+
+class MultiGetDeveloperSerializer(Schema):
+    issue_id = fields.UUID(required=True)
+    nickname = fields.Str(missing='')
+    limit = fields.Integer(missing=15)
+    start = fields.Integer(missing=0)

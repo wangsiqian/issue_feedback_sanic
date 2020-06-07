@@ -29,7 +29,13 @@ api_urls = [('/issue', jwt_wrapper(api.CreateIssueApi.as_view(),
                          )), ['PUT']),
             ('/issue/<issue_id>/tag',
              jwt_wrapper(api.UpdateIssueTagApi.as_view(),
-                         role_ids=(config.ROLE_MANAGER, )), ['PUT'])]
+                         role_ids=(config.ROLE_MANAGER, )), ['PUT']),
+            ('/issue/<issue_id>/developers',
+             jwt_wrapper(api.ListDevelopersByIssueApi.as_view(),
+                         role_ids=(
+                             config.ROLE_DEVELOPER,
+                             config.ROLE_MANAGER,
+                         )), ['GET'])]
 for url, view, methods in api_urls:
     issue_api_blueprint.add_route(view, url, methods=methods)
 
@@ -46,7 +52,10 @@ service_urls = [
      service.ListIssuesByProductIdService.as_view(), ['GET']),
     ('/issue/<issue_id>/assign', service.AssignIssueService.as_view(), ['PUT'
                                                                         ]),
-    ('/issue/<issue_id>/tag', service.UpdateIssueTagService.as_view(), ['PUT'])
+    ('/issue/<issue_id>/tag', service.UpdateIssueTagService.as_view(), ['PUT'
+                                                                        ]),
+    ('/issue/<issue_id>/developers',
+     service.ListDevelopersByIssueService.as_view(), ['GET'])
 ]
 issue_service_blueprint = Blueprint('issue_service', url_prefix='/service/v1')
 for url, view, methods in service_urls:

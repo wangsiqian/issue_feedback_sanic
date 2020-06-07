@@ -10,10 +10,10 @@ class Profile(AioModel):
     __table_name__ = 'profile'
 
     user_id = columns.UUID(primary_key=True)
-    nickname = columns.Text()
+    nickname = columns.Text(custom_index=True)
     avatar = columns.Text(default='')
     gender = columns.TinyInt(default=1)
-    role_id = columns.Text(default=app.config.ROLE_USER, index=True)
+    role_id = columns.Text(default=app.config.ROLE_USER, custom_index=True)
 
     created_at = columns.DateTime(default=datetime.utcnow)
     updated_at = columns.DateTime(default=datetime.utcnow)
