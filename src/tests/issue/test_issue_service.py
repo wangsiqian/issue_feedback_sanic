@@ -101,6 +101,28 @@ class TestIssueService(IssueService, TagService, ProfileService):
         assert json_result3['result']['likes'] == 0
         assert json_result3['result']['dislikes'] == 1
 
+    async def test_update_issue(self, client):
+        product_id = str(uuid.uuid4())
+        owner_id = str(uuid.uuid4())
+        # 创建两个反馈
+        issue_id = await self.create_issue(client=client,
+                                           product_id=product_id,
+                                           owner_id=owner_id,
+                                           title='反馈1')
+
+        # 更新
+        url = f'/service/v1/issue/{issue_id}'
+        await client.put(url,
+                         json={
+                             'owner_id': owner_id,
+                             'title': 'new',
+                             'description': 'new'
+                         })
+
+        issue = await self.get_issue_by_id(client, issue_id)
+        assert issue['title'] == 'new'
+        assert issue['description'] == 'new'
+
     async def test_list_issues_by_product_id(self, client):
         product_id = str(uuid.uuid4())
         owner_id = str(uuid.uuid4())

@@ -165,3 +165,12 @@ class ModifyIssueStatusSerializer(Schema):
     def validate_status(self, value):
         if value not in [Issue.STATUS_OPENING, Issue.STATUS_CLOSED]:
             raise ValidationError('Only accept opening or closed')
+
+
+class UpdateIssueSerializer(Schema):
+    """更新需求
+    """
+    issue_id = fields.UUID(required=True)
+    owner_id = fields.UUID(required=True)
+    title = fields.Str()
+    description = fields.Str()

@@ -41,6 +41,10 @@ class Issue(AioModel):
 
         return issue
 
+    async def update_content(self, **new_content):
+        new_content['updated_at'] = datetime.utcnow()
+        return await self.async_update(**new_content)
+
     async def close_issue(self):
         self.status = self.STATUS_CLOSED
         await self.async_save()

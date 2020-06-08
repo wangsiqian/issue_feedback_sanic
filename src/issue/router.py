@@ -48,6 +48,7 @@ for url, view, methods in api_urls:
 service_urls = [
     ('/issue', service.CreateIssueService.as_view(), ['POST']),
     ('/issue/<issue_id>', service.GetIssueByIdService.as_view(), ['GET']),
+    ('/issue/<issue_id>', service.UpdateIssueService.as_view(), ['PUT']),
     ('/issue/<issue_id>/vote', service.IssueVoteService.as_view(), ['PUT']),
     ('/issue/<issue_id>/statistics',
      service.GetStatisticsByIssueIdService.as_view(), ['GET']),
@@ -60,7 +61,7 @@ service_urls = [
     ('/issue/<issue_id>/developers',
      service.ListDevelopersByIssueService.as_view(), ['GET']),
     ('/issue/<issue_id>/status', service.ModifyIssueStatusService.as_view(),
-     ['PUT'])
+     ['PUT']),
 ]
 issue_service_blueprint = Blueprint('issue_service', url_prefix='/service/v1')
 for url, view, methods in service_urls:
