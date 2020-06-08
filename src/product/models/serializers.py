@@ -19,6 +19,13 @@ class ProductSerializer(Schema):
     created_at = fields.DateTime()
 
 
+class UpdateProductSerializer(Schema):
+    manager_id = fields.UUID(required=True)
+    product_id = fields.UUID(required=True)
+    name = fields.Str()
+    description = fields.Str()
+
+
 class ManagerIdSerializer(Schema):
     """反序列化产品ID
     """
@@ -27,3 +34,8 @@ class ManagerIdSerializer(Schema):
 
 class ProductIdSerializer(Schema):
     product_id = fields.UUID()
+
+
+class DeleteProductSerializer(Schema):
+    product_id = fields.UUID(required=True)
+    manager_id = fields.UUID(required=True)

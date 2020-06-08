@@ -85,3 +85,46 @@ class TestProductService:
         products = json_result2['result']['products']
         assert products[0]['manager_id'] == manager2_id
         assert len(products) == 1
+
+    async def test_delete_product(self, client):
+        manager_id = str(uuid.uuid4())
+
+        product_id = await self._create_product(client, manager_id)
+        await self._create_product(client, manager_id)
+        await self._create_product(client, manager_id)
+
+        # 创建3个产品
+        response1 = await client.get(
+            f'/service/v1/product/manager/{manager_id}')
+        json_result1 = await response1.json()
+        assert len(json_result1['result']['products']) == 3
+
+        # 删除
+        url = f'/service/v1/product/{product_id}'
+        response2 = await client.delete(url, json={
+            'manager_id': manager_id,
+        })
+        assert response2.status == 200
+        json_result2 = await response2.json()
+        assert json_result2['ok']
+
+        response3 = await client.get(
+            f'/service/v1/product/manager/{manager_id}')
+        json_result3 = await response3.json()
+        assert len(json_result3['result']['products']) == 2
+
+    async def test_update_product(self, client):
+        manager_id = str(uuid.uuid4())
+        product_id = await self._create_product(client, manager_id)
+        response = await client.put(f'/service/v1/product/{product_id}',
+                                    json={
+                                        'manager_id': manager_id,
+                                        'name': 'new',
+                                        'description': 'new'
+                                    })
+        assert response.status == 200
+        json_result = await response.json()
+        assert json_result['ok']
+
+        assert json_result['result']['name'] == 'new'
+        assert json_result['result']['description'] == 'new'

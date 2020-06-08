@@ -25,3 +25,11 @@ class Product(AioModel):
                                           product_id=str(uuid.uuid4()),
                                           name=name,
                                           description=description)
+
+    async def update_product(self, **new_product):
+        # 清理不需要更新的字段
+        new_product.pop('manager_id', '')
+        new_product.pop('product_id', '')
+
+        new_product['updated_at'] = datetime.utcnow()
+        return await self.async_update(**new_product)
