@@ -1,15 +1,21 @@
+from profile.models.profile import Profile
+
 from app import app
 from issue.exceptions import IssueNotFound, StatisticsNotFount
 from issue.models.issue import (Issue, IssueByProduct, IssueVoteRecord,
                                 IssueVoteStatistics)
-from issue.models.serializers import (
-    AssignIssueSerializer, CreateIssueSerializer, IssueIdSerializer,
-    IssueSerializer, IssueVoteRecordSerializer, IssueVoteSerializer,
-    MultiQueryIssuesSerializer, StatisticsSerializer, UpdateIssueTagSerializer,
-    MultiGetDeveloperSerializer, DeveloperSerializer)
+from issue.models.serializers import (AssignIssueSerializer,
+                                      CreateIssueSerializer,
+                                      DeveloperSerializer, IssueIdSerializer,
+                                      IssueSerializer,
+                                      IssueVoteRecordSerializer,
+                                      IssueVoteSerializer,
+                                      MultiGetDeveloperSerializer,
+                                      MultiQueryIssuesSerializer,
+                                      StatisticsSerializer,
+                                      UpdateIssueTagSerializer)
 from libs.sanic_api.views import (GetView, ListView, PostView, PutView,
                                   ok_response)
-from profile.models.profile import Profile
 
 
 class CreateIssueService(PostView):

@@ -1,8 +1,8 @@
 from issue.models.serializers import IssueIdSerializer
 from issue.service import (AssignIssueService, CreateIssueService,
-                           IssueVoteService, ListIssuesByProductIdService,
-                           UpdateIssueTagService, GetIssueByIdService,
-                           ListDevelopersByIssueService)
+                           GetIssueByIdService, IssueVoteService,
+                           ListDevelopersByIssueService,
+                           ListIssuesByProductIdService, UpdateIssueTagService)
 
 
 class CreateIssueApi(CreateIssueService):

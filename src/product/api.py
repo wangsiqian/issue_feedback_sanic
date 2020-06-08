@@ -1,6 +1,6 @@
-from product.service import (CreateProductService, ListProductByManagerService,
-                             ListProductsService, UpdateProductByIdService,
-                             DeleteProductByIdService)
+from product.service import (CreateProductService, DeleteProductByIdService,
+                             ListProductByManagerService, ListProductsService,
+                             UpdateProductByIdService)
 
 
 class CreateProductApi(CreateProductService):

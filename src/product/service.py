@@ -1,9 +1,9 @@
-from libs.sanic_api.views import ListView, PostView, DeleteView, PutView
+from libs.sanic_api.views import DeleteView, ListView, PostView, PutView
 from product.exceptions import ProductNotFound
 from product.models.product import Product
 from product.models.serializers import (CreateProductSerializer,
-                                        ManagerIdSerializer, ProductSerializer,
                                         DeleteProductSerializer,
+                                        ManagerIdSerializer, ProductSerializer,
                                         UpdateProductSerializer)
 
 

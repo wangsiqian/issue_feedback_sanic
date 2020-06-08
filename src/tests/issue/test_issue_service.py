@@ -1,8 +1,9 @@
 import uuid
 
-from app import app
 from tests.profile.test_profile_service import ProfileService
 from tests.tag.test_tag_service import TagService
+
+from app import app
 
 
 class IssueService:

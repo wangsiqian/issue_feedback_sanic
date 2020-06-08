@@ -13,5 +13,6 @@ jobs:
 
     - name: Run lint
       run: |
-        pylava --skip '*/tests/*,*/configs/*,*/aiocqlengine/models.py'
-        yapf -dr . | (! grep '.')
+        yapf -dr src -e 'src/issue/service.py' | (! grep '.')
+        pylava src --skip '*/tests/*,*/configs/*,*/aiocqlengine/models.py'
+        isort -rc src --check-only --diff

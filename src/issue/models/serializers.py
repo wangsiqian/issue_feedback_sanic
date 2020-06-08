@@ -1,7 +1,8 @@
+from profile.models.profile import Profile
+
 from marshmallow import Schema, ValidationError, fields, validates
 
 from issue.models.issue import Issue
-from profile.models.profile import Profile
 from tag.models.tag import Tag
 
 
