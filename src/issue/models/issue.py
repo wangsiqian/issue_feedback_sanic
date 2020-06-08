@@ -41,6 +41,14 @@ class Issue(AioModel):
 
         return issue
 
+    async def close_issue(self):
+        self.status = self.STATUS_CLOSED
+        await self.async_save()
+
+    async def open_issue(self):
+        self.status = self.STATUS_OPENING
+        await self.async_save()
+
     async def handle_developer(self, developer_id):
         developer_ids = list(self.developer_ids)
         try:

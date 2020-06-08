@@ -154,3 +154,14 @@ class MultiGetDeveloperSerializer(Schema):
     nickname = fields.Str(missing='')
     limit = fields.Integer(missing=15)
     start = fields.Integer(missing=0)
+
+
+class ModifyIssueStatusSerializer(Schema):
+    issue_id = fields.UUID(required=True)
+    user_id = fields.UUID(required=True)
+    status = fields.Str(required=True)
+
+    @validates('status')
+    def validate_status(self, value):
+        if value not in [Issue.STATUS_OPENING, Issue.STATUS_CLOSED]:
+            raise ValidationError('Only accept opening or closed')

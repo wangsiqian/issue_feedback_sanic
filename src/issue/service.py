@@ -10,10 +10,12 @@ from issue.models.serializers import (AssignIssueSerializer,
                                       IssueSerializer,
                                       IssueVoteRecordSerializer,
                                       IssueVoteSerializer,
+                                      ModifyIssueStatusSerializer,
                                       MultiGetDeveloperSerializer,
                                       MultiQueryIssuesSerializer,
                                       StatisticsSerializer,
                                       UpdateIssueTagSerializer)
+from libs.sanic_api.exceptions import PermissionDenied
 from libs.sanic_api.views import (GetView, ListView, PostView, PutView,
                                   ok_response)
 
@@ -174,6 +176,36 @@ class GetIssueByIdService(GetView):
                 issue_id=self.validated_data['issue_id'])
         except Issue.DoesNotExist:
             raise IssueNotFound
+
+        return issue
+
+
+class ModifyIssueStatusService(PutView):
+    """修改 issue 状态
+    """
+    args_deserializer_class = ModifyIssueStatusSerializer
+
+    async def save(self):
+        try:
+            issue = await Issue.async_get(
+                issue_id=self.validated_data['issue_id'])
+        except Issue.DoesNotExist:
+            raise IssueNotFound
+
+        user_id = self.validated_data['user_id']
+        # 获取身份
+        role_id = await Profile.get_role_id(user_id=user_id)
+
+        admin_role = [app.config.ROLE_DEVELOPER, app.config.ROLE_MANAGER]
+        if issue.owner_id != user_id and role_id not in admin_role:
+            # 判断是否有关闭的权限
+            raise PermissionDenied
+
+        status = self.validated_data['status']
+        if status == issue.STATUS_OPENING:
+            await issue.open_issue()
+        elif status == issue.STATUS_CLOSED:
+            await issue.close_issue()
 
         return issue
 
