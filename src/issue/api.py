@@ -3,7 +3,8 @@ from issue.service import (AssignIssueService, CreateIssueService,
                            GetIssueByIdService, IssueVoteService,
                            ListDevelopersByIssueService,
                            ListIssuesByProductIdService,
-                           ModifyIssueStatusService, UpdateIssueTagService)
+                           ModifyIssueStatusService, UpdateIssueService,
+                           UpdateIssueTagService)
 
 
 class CreateIssueApi(CreateIssueService):
@@ -35,4 +36,8 @@ class ListDevelopersByIssueApi(ListDevelopersByIssueService):
 
 
 class ModifyIssueStatusApi(ModifyIssueStatusService):
+    pass
+
+
+class UpdateIssueApi(UpdateIssueService):
     pass
