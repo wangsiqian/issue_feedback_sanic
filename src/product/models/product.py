@@ -13,7 +13,7 @@ class Product(AioModel):
 
     manager_id = columns.UUID(partition_key=True)
     product_id = columns.UUID(primary_key=True)
-    name = columns.Text()
+    name = columns.Text(index=True)
     description = columns.Text()
 
     created_at = columns.DateTime(default=datetime.utcnow, index=True)
@@ -27,9 +27,5 @@ class Product(AioModel):
                                           description=description)
 
     async def update_product(self, **new_product):
-        # 清理不需要更新的字段
-        new_product.pop('manager_id', '')
-        new_product.pop('product_id', '')
-
         new_product['updated_at'] = datetime.utcnow()
         return await self.async_update(**new_product)

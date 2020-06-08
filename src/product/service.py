@@ -1,5 +1,5 @@
 from libs.sanic_api.views import DeleteView, ListView, PostView, PutView
-from product.exceptions import ProductNotFound
+from product.exceptions import ProductAlreadyExist, ProductNotFound
 from product.models.product import Product
 from product.models.serializers import (CreateProductSerializer,
                                         DeleteProductSerializer,
@@ -14,10 +14,16 @@ class CreateProductService(PostView):
     post_serializer_class = ProductSerializer
 
     async def save(self):
-        return await Product.new(
-            manager_id=self.validated_data['manager_id'],
-            name=self.validated_data['name'],
-            description=self.validated_data['description'])
+        name = self.validated_data['name']
+        try:
+            await Product.async_get(name=name)
+        except Product.DoesNotExist:
+            return await Product.new(
+                manager_id=self.validated_data['manager_id'],
+                name=name,
+                description=self.validated_data['description'])
+
+        raise ProductAlreadyExist
 
 
 class ListProductsService(ListView):

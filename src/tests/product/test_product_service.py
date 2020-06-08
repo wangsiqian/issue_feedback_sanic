@@ -2,13 +2,13 @@ import uuid
 
 
 class TestProductService:
-    async def _create_product(self, client, manager_id):
+    async def _create_product(self, client, manager_id, name, description):
         # 创建一个产品
         response = await client.post('/service/v1/product',
                                      json={
                                          'manager_id': manager_id,
-                                         'name': '产品1',
-                                         'description': '产品1的介绍'
+                                         'name': name,
+                                         'description': description
                                      })
         assert response.status == 200
         json_result = await response.json()
@@ -36,16 +36,25 @@ class TestProductService:
         assert product['name'] == '产品1'
         assert product['description'] == '产品1的介绍'
 
-        assert product['product_id']
-        assert product['created_at']
+        error_response = await client.post(url,
+                                           json={
+                                               'manager_id': manager_id,
+                                               'name': '产品1',
+                                               'description': '产品1的介绍'
+                                           })
+        assert error_response.status == 200
+        error_result = await error_response.json()
+
+        assert error_result['error_type'] == 'product_already_exist'
+        assert error_result['message'] == '产品名需要唯一'
 
     async def test_list_products(self, client):
         """测试列出产品"""
         manager_id = str(uuid.uuid4())
         # 创建3个产品
-        await self._create_product(client, manager_id)
-        await self._create_product(client, manager_id)
-        await self._create_product(client, manager_id)
+        await self._create_product(client, manager_id, '1', '1')
+        await self._create_product(client, manager_id, '2', '2')
+        await self._create_product(client, manager_id, '3', '3')
 
         response = await client.get('/service/v1/products')
         assert response.status == 200
@@ -60,13 +69,13 @@ class TestProductService:
     async def test_list_products_by_manager(self, client):
         manager1_id = str(uuid.uuid4())
         # 创建3个产品
-        await self._create_product(client, manager1_id)
-        await self._create_product(client, manager1_id)
-        await self._create_product(client, manager1_id)
+        await self._create_product(client, manager1_id, '1', '1')
+        await self._create_product(client, manager1_id, '2', '2')
+        await self._create_product(client, manager1_id, '3', '3')
 
         # 另一个管理员
         manager2_id = str(uuid.uuid4())
-        await self._create_product(client, manager2_id)
+        await self._create_product(client, manager2_id, '4', '4')
 
         # 按管理员ID查询
         response1 = await client.get(
@@ -89,9 +98,9 @@ class TestProductService:
     async def test_delete_product(self, client):
         manager_id = str(uuid.uuid4())
 
-        product_id = await self._create_product(client, manager_id)
-        await self._create_product(client, manager_id)
-        await self._create_product(client, manager_id)
+        product_id = await self._create_product(client, manager_id, '1', '1')
+        await self._create_product(client, manager_id, '2', '2')
+        await self._create_product(client, manager_id, '3', '3')
 
         # 创建3个产品
         response1 = await client.get(
@@ -115,7 +124,7 @@ class TestProductService:
 
     async def test_update_product(self, client):
         manager_id = str(uuid.uuid4())
-        product_id = await self._create_product(client, manager_id)
+        product_id = await self._create_product(client, manager_id, '1', '1')
         response = await client.put(f'/service/v1/product/{product_id}',
                                     json={
                                         'manager_id': manager_id,

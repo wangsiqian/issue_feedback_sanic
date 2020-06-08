@@ -7,14 +7,14 @@ from app import app
 
 
 class TestProductApi:
-    async def _create_product(self, client, manager_id):
+    async def _create_product(self, client, manager_id, name, description):
         # 创建一个产品
         token = await AccountService.get_token(client, app.config.ROLE_MANAGER)
         response = await client.post('/v1/product',
                                      json={
                                          'manager_id': manager_id,
-                                         'name': '产品1',
-                                         'description': '产品1的介绍'
+                                         'name': name,
+                                         'description': description
                                      },
                                      headers={'Authorization': token})
         assert response.status == 200
@@ -58,13 +58,13 @@ class TestProductApi:
         manager1_id = str(uuid.uuid4())
         token = await AccountService.get_token(client, app.config.ROLE_MANAGER)
         # 创建3个产品
-        await self._create_product(client, manager1_id)
-        await self._create_product(client, manager1_id)
-        await self._create_product(client, manager1_id)
+        await self._create_product(client, manager1_id, '1', '1')
+        await self._create_product(client, manager1_id, '2', '2')
+        await self._create_product(client, manager1_id, '3', '3')
 
         # 另一个管理员
         manager2_id = str(uuid.uuid4())
-        await self._create_product(client, manager2_id)
+        await self._create_product(client, manager2_id, '4', '4')
 
         # 按管理员ID查询
         response1 = await client.get(f'/v1/product/manager/{manager1_id}',
