@@ -67,8 +67,8 @@ class ListIssuesByProductIdService(ListView):
 
         result = {'issues': [], 'count': len(issues)}
         # 分页
-        start = self.validated_data.get('start', 0)
-        limit = self.validated_data.get('limit', 10)
+        start = self.validated_data.get('start')
+        limit = self.validated_data.get('limit')
         serializer = self.list_serializer_class()
         for issue in issues[start:start + limit]:
             issue_map = serializer.dump(issue)
@@ -257,8 +257,9 @@ class ListDevelopersByIssueService(ListView):
 
     def response(self, results):
         _serializer = self.list_serializer_class()
-        profile = results[self.validated_data.get('start', 0):self.
-                          validated_data.get('limit', 15)]
+        start = self.validated_data.get('start')
+        limit = self.validated_data.get('limit')
+        profile = results[start:start + limit]
         return ok_response({
             'developers': _serializer.dump(profile, many=True),
             'count': len(results)

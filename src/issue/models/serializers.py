@@ -3,6 +3,7 @@ from profile.models.profile import Profile
 from marshmallow import Schema, ValidationError, fields, validates
 
 from issue.models.issue import Issue
+from shared.serializers import PagedResourceSerializer
 from tag.models.tag import Tag
 
 
@@ -106,28 +107,16 @@ class StatisticsSerializer(Schema):
     dislikes = fields.Integer()
 
 
-class MultiQueryIssuesSerializer(Schema):
+class MultiQueryIssuesSerializer(PagedResourceSerializer):
     """反序列化 查询issue的数据
     """
     product_id = fields.UUID(required=True)
     status = fields.Str(required=True)
-    limit = fields.Integer(missing=10)
-    start = fields.Integer(missing=0)
 
     @validates('status')
     def validate_status(self, value):
         if value not in [Issue.STATUS_OPENING, Issue.STATUS_CLOSED]:
             raise ValidationError('Only accept "opening" or "closed"')
-
-    @validates('limit')
-    def validate_limit(self, value):
-        if value < 0 or 20 < value:
-            raise ValidationError('Only accept between 0 and 20')
-
-    @validates('start')
-    def validate_start(self, value):
-        if value < 0:
-            raise ValidationError('Only accept greater than 0')
 
 
 class AssignIssueSerializer(Schema):
@@ -149,11 +138,9 @@ class DeveloperSerializer(Schema):
     nickname = fields.Str()
 
 
-class MultiGetDeveloperSerializer(Schema):
+class MultiGetDeveloperSerializer(PagedResourceSerializer):
     issue_id = fields.UUID(required=True)
     nickname = fields.Str(missing='')
-    limit = fields.Integer(missing=15)
-    start = fields.Integer(missing=0)
 
 
 class ModifyIssueStatusSerializer(Schema):

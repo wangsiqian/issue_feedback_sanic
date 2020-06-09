@@ -50,6 +50,7 @@ class TestCommentServices(CommentService):
         response = await client.get(url)
         assert response.status == 200
         json_result = await response.json()
+        print(json_result)
         assert json_result['ok']
 
         comments = json_result['result']['comments']

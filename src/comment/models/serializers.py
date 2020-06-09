@@ -2,6 +2,8 @@ from profile.models.profile import Profile
 
 from marshmallow import Schema, fields
 
+from shared.serializers import PagedResourceSerializer
+
 
 class CreateCommentSerializer(Schema):
     """反序列化创建留言
@@ -45,3 +47,9 @@ class ListCommentsSerializer(Schema):
                 'nickname': profile.nickname,
                 'avatar': profile.avatar
             }
+
+
+class ListCommentsByIssueIdSerializer(PagedResourceSerializer):
+    """反序列化按需求列出评论
+    """
+    issue_id = fields.UUID(required=True)
