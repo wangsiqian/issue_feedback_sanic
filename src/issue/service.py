@@ -141,8 +141,7 @@ class AssignIssueService(PutView):
         except Issue.DoesNotExist:
             raise IssueNotFound
 
-        await issue.handle_developer(self.validated_data['developer_id'])
-        await issue.async_save()
+        await issue.handle_developers(self.validated_data['developer_ids'])
 
         return issue
 

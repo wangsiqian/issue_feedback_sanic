@@ -22,9 +22,9 @@ class IssueSerializer(Schema):
     issue_id = fields.UUID()
     owner = fields.Method('get_owner')
     tags = fields.Method('get_tags')
+    developers = fields.Method('get_developers')
     title = fields.Str()
     description = fields.Str()
-    developer_ids = fields.List(cls_or_instance=fields.UUID)
     status = fields.Str()
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
@@ -123,7 +123,7 @@ class AssignIssueSerializer(Schema):
     """委派给开发人员
     """
     issue_id = fields.UUID(required=True)
-    developer_id = fields.UUID(required=True)
+    developer_ids = fields.List(cls_or_instance=fields.UUID, required=True)
 
 
 class UpdateIssueTagSerializer(Schema):

@@ -170,36 +170,6 @@ class TestIssueService(IssueService, TagService, ProfileService):
         print(filtered_issues)
         assert json_result2['result']['count'] == 2
 
-    async def test_assign_issue_to_developer(self, client):
-        owner_id = str(uuid.uuid4())
-        issue_id = await self.create_issue(client=client,
-                                           product_id=str(uuid.uuid4()),
-                                           owner_id=owner_id,
-                                           title='反馈1')
-
-        # 分配给开发者
-        url = f'/service/v1/issue/{issue_id}/assign'
-        developer_id = 'c288acad-37c3-4b36-bf61-aada41fe1b8f'
-        response1 = await client.put(url, json={'developer_id': developer_id})
-        assert response1.status == 200
-
-        json_result1 = await response1.json()
-        assert json_result1['ok']
-
-        issue = json_result1['result']
-        assert len(issue['developer_ids']) == 1
-        assert issue['developer_ids'][0] == developer_id
-
-        # 再次分配
-        response2 = await client.put(url, json={'developer_id': developer_id})
-        assert response2.status == 200
-
-        json_result2 = await response2.json()
-        assert json_result2['ok']
-
-        issue = json_result2['result']
-        assert len(issue['developer_ids']) == 0
-
     async def test_update_issue_tags(self, client):
         # 创建标签
         await self.create_tag(client, 'Bug', 'Bug')

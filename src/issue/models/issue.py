@@ -53,15 +53,17 @@ class Issue(AioModel):
         self.status = self.STATUS_OPENING
         await self.async_save()
 
-    async def handle_developer(self, developer_id):
-        developer_ids = list(self.developer_ids)
-        try:
-            developer_ids.remove(developer_id)
-        except ValueError:
-            # 如果不存在则添加
-            developer_ids.append(developer_id)
+    async def handle_developers(self, developer_ids):
+        current_developer_ids = list(self.developer_ids)
+        for developer_id in developer_ids:
+            try:
+                current_developer_ids.remove(developer_id)
+            except ValueError:
+                # 如果不存在则添加
+                current_developer_ids.append(developer_id)
 
-        self.developer_ids = developer_ids
+        self.developer_ids = current_developer_ids
+        await self.async_save()
 
     async def handle_tags(self, tags_name):
         tags = list(self.tags)
