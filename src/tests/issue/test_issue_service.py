@@ -172,9 +172,9 @@ class TestIssueService(IssueService, TagService, ProfileService):
 
     async def test_update_issue_tags(self, client):
         # 创建标签
-        await self.create_tag(client, 'Bug', 'Bug')
-        await self.create_tag(client, 'Help', 'Help')
-        await self.create_tag(client, 'Enhancement', 'Enhancement')
+        await self.create_tag(client, 'Bug', 'Bug', '#eb4034')
+        await self.create_tag(client, 'Help', 'Help', '#eb4034')
+        await self.create_tag(client, 'Enhancement', 'Enhancement', '#eb4034')
 
         issue_id = await self.create_issue(client,
                                            product_id=str(uuid.uuid4()),

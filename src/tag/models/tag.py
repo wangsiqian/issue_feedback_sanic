@@ -11,10 +11,13 @@ class Tag(AioModel):
     __table_name__ = 'tag'
     name = columns.Text(primary_key=True)
     description = columns.Text()
+    color = columns.Text()
 
     created_at = columns.DateTime(default=datetime.utcnow)
     updated_at = columns.DateTime(default=datetime.utcnow)
 
     @classmethod
-    async def new(cls, name, description):
-        return await Tag.async_create(name=name, description=description)
+    async def new(cls, name, description, color):
+        return await Tag.async_create(name=name,
+                                      description=description,
+                                      color=color)

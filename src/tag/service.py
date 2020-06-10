@@ -16,7 +16,9 @@ class CreateTagService(PostView):
             await Tag.async_get(name=name)
         except Tag.DoesNotExist:
             return await Tag.new(
-                name=name, description=self.validated_data['description'])
+                name=name,
+                description=self.validated_data['description'],
+                color=self.validated_data['color'])
 
         raise TagAlreadyExist
 
