@@ -67,7 +67,7 @@ class IssueSerializer(Schema):
                 continue
 
             result.append({
-                'user_id': profile.user_id,
+                'user_id': str(profile.user_id),
                 'nickname': profile.nickname
             })
         return result
