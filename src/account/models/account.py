@@ -49,6 +49,18 @@ class Account(AioModel):
 
         return account
 
+    @classmethod
+    async def update(cls, account_id, password: str):
+        # 生成盐
+        salt = bcrypt.gensalt()
+        # 密码加密
+        encrypted_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+
+        account = await Account.async_get(account_id=account_id)
+        await account.async_update(password=encrypted_password,
+                                   salt=salt)
+        return account
+
     async def verify_password(self, password):
         # 验证密码
         encrypted_password = bcrypt.hashpw(password.encode('utf-8'), self.salt)

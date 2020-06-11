@@ -1,6 +1,6 @@
 import inspect
 
-from cassandra import AlreadyExists, InvalidRequest
+from cassandra import AlreadyExists
 from cassandra.cluster import Cluster, NoHostAvailable
 from cassandra.cqlengine import connection as cqlengine_connection
 from cassandra.cqlengine import management
@@ -146,23 +146,17 @@ class DatabaseManagement(metaclass=Singleton):
         for model in table_models:
             management.sync_table(model)
 
-        custom_indexes = (
-            """
+        management.execute("""
             CREATE CUSTOM INDEX idx_nickname ON profile(nickname)
             USING 'org.apache.cassandra.index.sasi.SASIIndex'
             WITH OPTIONS = { 'mode': 'CONTAINS' }
-        """,
-            """
+        """)
+
+        management.execute("""
             CREATE CUSTOM INDEX idx_role_id ON profile(role_id)
             USING 'org.apache.cassandra.index.sasi.SASIIndex'
             WITH OPTIONS = { 'mode': 'CONTAINS' }
-        """,
-        )
-        for index in custom_indexes:
-            try:
-                management.execute(index)
-            except InvalidRequest:
-                pass
+        """)
 
     def drop_db(self):
         """删除数据表, 单元测试时使用

@@ -10,13 +10,10 @@ from issue.models.serializers import (AssignIssueSerializer,
                                       IssueSerializer,
                                       IssueVoteRecordSerializer,
                                       IssueVoteSerializer,
-                                      ModifyIssueStatusSerializer,
                                       MultiGetDeveloperSerializer,
                                       MultiQueryIssuesSerializer,
                                       StatisticsSerializer,
-                                      UpdateIssueSerializer,
                                       UpdateIssueTagSerializer)
-from libs.sanic_api.exceptions import PermissionDenied
 from libs.sanic_api.views import (GetView, ListView, PostView, PutView,
                                   ok_response)
 
@@ -67,8 +64,8 @@ class ListIssuesByProductIdService(ListView):
 
         result = {'issues': [], 'count': len(issues)}
         # 分页
-        start = self.validated_data.get('start')
-        limit = self.validated_data.get('limit')
+        start = self.validated_data.get('start', 0)
+        limit = self.validated_data.get('limit', 10)
         serializer = self.list_serializer_class()
         for issue in issues[start:start + limit]:
             issue_map = serializer.dump(issue)
@@ -141,7 +138,8 @@ class AssignIssueService(PutView):
         except Issue.DoesNotExist:
             raise IssueNotFound
 
-        await issue.handle_developers(self.validated_data['developer_ids'])
+        await issue.handle_developer(self.validated_data['developer_id'])
+        await issue.async_save()
 
         return issue
 
@@ -176,36 +174,6 @@ class GetIssueByIdService(GetView):
                 issue_id=self.validated_data['issue_id'])
         except Issue.DoesNotExist:
             raise IssueNotFound
-
-        return issue
-
-
-class ModifyIssueStatusService(PutView):
-    """修改 issue 状态
-    """
-    args_deserializer_class = ModifyIssueStatusSerializer
-
-    async def save(self):
-        try:
-            issue = await Issue.async_get(
-                issue_id=self.validated_data['issue_id'])
-        except Issue.DoesNotExist:
-            raise IssueNotFound
-
-        user_id = self.validated_data['user_id']
-        # 获取身份
-        role_id = await Profile.get_role_id(user_id=user_id)
-
-        admin_role = [app.config.ROLE_DEVELOPER, app.config.ROLE_MANAGER]
-        if issue.owner_id != user_id and role_id not in admin_role:
-            # 判断是否有关闭的权限
-            raise PermissionDenied
-
-        status = self.validated_data['status']
-        if status == issue.STATUS_OPENING:
-            await issue.open_issue()
-        elif status == issue.STATUS_CLOSED:
-            await issue.close_issue()
 
         return issue
 
@@ -256,28 +224,9 @@ class ListDevelopersByIssueService(ListView):
 
     def response(self, results):
         _serializer = self.list_serializer_class()
-        start = self.validated_data.get('start')
-        limit = self.validated_data.get('limit')
-        profile = results[start:start + limit]
+        profile = results[self.validated_data.get('start', 0):self.
+                          validated_data.get('limit', 15)]
         return ok_response({
             'developers': _serializer.dump(profile, many=True),
             'count': len(results)
         })
-
-
-class UpdateIssueService(PutView):
-    """更新需求
-    """
-    args_deserializer_class = UpdateIssueSerializer
-
-    async def save(self):
-        try:
-            issue = await Issue.async_get(
-                issue_id=self.validated_data['issue_id'])
-        except Issue.DoesNotExist:
-            raise IssueNotFound
-
-        if self.validated_data['owner_id'] != issue.owner_id:
-            raise PermissionDenied
-
-        await issue.update_content(**self.validated_data)

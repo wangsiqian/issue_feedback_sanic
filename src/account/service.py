@@ -2,6 +2,7 @@ from random import randint
 
 import ujson
 from aio_pika import Message
+from jwt import PyJWTError
 
 from account.exceptions import (AccountAlreadyExist, AccountNotFound,
                                 CodeAlreadyExpired, CodeAlreadySent,
@@ -9,6 +10,7 @@ from account.exceptions import (AccountAlreadyExist, AccountNotFound,
 from account.models.account import Account, CodeRecord
 from account.models.serializers import (AccountIdSerializer,
                                         CreateAccountServiceSerializer,
+                                        CreateAccountApiSerializer,
                                         LoginSerializer, RoleIdSerializer,
                                         SessionSerializer, UserIdSerializer,
                                         ValidationSerializer)
@@ -22,24 +24,22 @@ class CreateAccountService(PostView):
     """
     args_deserializer_class = CreateAccountServiceSerializer
 
-    async def validate_code(self, account_id):
-        token_payload = decode_token(self.validated_data['validate_token'])
+    async def save(self):
+        try:
+            # 解析 token
+            token_payload = decode_token(self.validated_data['validate_token'])
+        except PyJWTError:
+            raise CodeAlreadyExpired
+        else:
+            if not isinstance(token_payload, dict):
+                # 可能解析失败为其他对象
+                raise CodeAlreadyExpired
 
-        if not isinstance(token_payload, dict):
-            # 可能解析失败为其他对象
-            return False
-
+        account_id = self.validated_data['account_id']
         validate_code = self.validated_data['validate_code']
         if account_id != token_payload.get(
                 'account_id') or validate_code != token_payload.get(
                     'validate_code'):
-            return False
-
-        return True
-
-    async def save(self):
-        account_id = self.validated_data['account_id']
-        if not await self.validate_code(account_id):
             # 验证身份
             raise CodeAlreadyExpired
 
@@ -131,3 +131,34 @@ class GetRoleIdService(GetView):
                 user_id=self.validated_data['user_id'])
         except Account.DoesNotExist:
             raise AccountNotFound
+
+
+class ModifyPasswordService(PostView):
+    args_deserializer_class = CreateAccountApiSerializer
+
+    async def save(self):
+        try:
+            # 解析 token
+            token_payload = decode_token(self.validated_data['validate_token'])
+        except PyJWTError:
+            raise CodeAlreadyExpired
+        else:
+            if not isinstance(token_payload, dict):
+                # 可能解析失败为其他对象
+                raise CodeAlreadyExpired
+
+        account_id = self.validated_data['account_id']
+        validate_code = self.validated_data['validate_code']
+        if account_id != token_payload.get(
+                'account_id') or validate_code != token_payload.get(
+                    'validate_code'):
+            # 验证身份
+            raise CodeAlreadyExpired
+
+        try:
+            await Account.async_get(account_id=account_id)
+        except Account.DoesNotExist:
+            print('account_not_found!')
+        else:
+            return await Account.update(account_id=account_id,
+                                        password=self.validated_data['password'])

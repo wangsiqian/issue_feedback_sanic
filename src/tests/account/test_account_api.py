@@ -158,3 +158,61 @@ class TestAccountApi:
         assert error_result['message'] == '密码错误'
 
         return {'正确响应': json_result, '密码错误': error_result}
+
+    @api_docs(title='修改密码',
+              path='/v1/account/modify_password',
+              method='POST',
+              body={
+                  'account_id（必填）': '邮箱',
+                  'password（必填）': '密码',
+                  'validate_token': 'token',
+                  'validate_code': '验证码'
+              })
+    async def test_modify_password(self, client):
+        account_id = '123456789@qq.com'
+        password = '123456789@qq.con'
+        # 获取验证码
+        response = await client.post('/service/v1/account/send_code',
+                                     json={'account_id': account_id})
+        assert response.status == 200
+        json_result = await response.json()
+        validate_token = json_result['result']['validate_token']
+        validate_code = json_result['result']['validate_code']
+
+        url = '/v1/account'
+        response1 = await client.post(url,
+                                      json={
+                                           'account_id': account_id,
+                                           'password': '123456789@qq.com',
+                                           'validate_token': validate_token,
+                                           'validate_code': validate_code,
+                                      })
+
+        assert response1.status == 200
+        json_result1 = await response1.json()
+        assert json_result1['ok']
+
+        url = '/v1/account/modify_password'
+        response2 = await client.post(url,
+                                      json={
+                                            'account_id': account_id,
+                                            'password': password,
+                                            'validate_token': validate_token,
+                                            'validate_code': validate_code,
+                                       })
+
+        assert response2.status == 200
+        json_result2 = await response2.json()
+        print(json_result2)
+        assert json_result2['ok']
+
+        # 登陆
+        response3 = await client.post('/v1/login',
+                                      json={
+                                           'account_id': account_id,
+                                           'password': password
+                                      })
+        assert response3.status == 200
+        json_result3 = response3.json()
+
+        return {'正确响应': json_result3}

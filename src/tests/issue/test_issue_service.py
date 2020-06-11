@@ -22,7 +22,7 @@ class IssueService:
 
         return json_result['result']['issue_id']
 
-    async def get_issue_by_id(self, client, issue_id):
+    async def get_issue(self, client, issue_id):
         response = await client.get(f'/service/v1/issue/{issue_id}')
         assert response.status == 200
 
@@ -101,28 +101,6 @@ class TestIssueService(IssueService, TagService, ProfileService):
         assert json_result3['result']['likes'] == 0
         assert json_result3['result']['dislikes'] == 1
 
-    async def test_update_issue(self, client):
-        product_id = str(uuid.uuid4())
-        owner_id = str(uuid.uuid4())
-        # 创建两个反馈
-        issue_id = await self.create_issue(client=client,
-                                           product_id=product_id,
-                                           owner_id=owner_id,
-                                           title='反馈1')
-
-        # 更新
-        url = f'/service/v1/issue/{issue_id}'
-        await client.put(url,
-                         json={
-                             'owner_id': owner_id,
-                             'title': 'new',
-                             'description': 'new'
-                         })
-
-        issue = await self.get_issue_by_id(client, issue_id)
-        assert issue['title'] == 'new'
-        assert issue['description'] == 'new'
-
     async def test_list_issues_by_product_id(self, client):
         product_id = str(uuid.uuid4())
         owner_id = str(uuid.uuid4())
@@ -170,11 +148,41 @@ class TestIssueService(IssueService, TagService, ProfileService):
         print(filtered_issues)
         assert json_result2['result']['count'] == 2
 
+    async def test_assign_issue_to_developer(self, client):
+        owner_id = str(uuid.uuid4())
+        issue_id = await self.create_issue(client=client,
+                                           product_id=str(uuid.uuid4()),
+                                           owner_id=owner_id,
+                                           title='反馈1')
+
+        # 分配给开发者
+        url = f'/service/v1/issue/{issue_id}/assign'
+        developer_id = 'c288acad-37c3-4b36-bf61-aada41fe1b8f'
+        response1 = await client.put(url, json={'developer_id': developer_id})
+        assert response1.status == 200
+
+        json_result1 = await response1.json()
+        assert json_result1['ok']
+
+        issue = json_result1['result']
+        assert len(issue['developer_ids']) == 1
+        assert issue['developer_ids'][0] == developer_id
+
+        # 再次分配
+        response2 = await client.put(url, json={'developer_id': developer_id})
+        assert response2.status == 200
+
+        json_result2 = await response2.json()
+        assert json_result2['ok']
+
+        issue = json_result2['result']
+        assert len(issue['developer_ids']) == 0
+
     async def test_update_issue_tags(self, client):
         # 创建标签
-        await self.create_tag(client, 'Bug', 'Bug', '#eb4034')
-        await self.create_tag(client, 'Help', 'Help', '#eb4034')
-        await self.create_tag(client, 'Enhancement', 'Enhancement', '#eb4034')
+        await self.create_tag(client, 'Bug', 'Bug')
+        await self.create_tag(client, 'Help', 'Help')
+        await self.create_tag(client, 'Enhancement', 'Enhancement')
 
         issue_id = await self.create_issue(client,
                                            product_id=str(uuid.uuid4()),
@@ -187,7 +195,7 @@ class TestIssueService(IssueService, TagService, ProfileService):
         assert json_result['ok']
 
         # 查询 issue
-        issue = await self.get_issue_by_id(client, issue_id)
+        issue = await self.get_issue(client, issue_id)
         tags = issue['tags']
         assert len(tags) == 3
         assert tags[0]['name'] == 'Bug'
@@ -201,7 +209,7 @@ class TestIssueService(IssueService, TagService, ProfileService):
         await client.put(url,
                          json={'tags_name': ['Bug', 'Help', 'Enhancement']})
 
-        issue = await self.get_issue_by_id(client, issue_id)
+        issue = await self.get_issue(client, issue_id)
         tags = issue['tags']
         assert tags[0]['name'] == 'Enhancement'
         assert tags[0]['checked'] is True
@@ -238,29 +246,3 @@ class TestIssueService(IssueService, TagService, ProfileService):
         assert json_result2['ok']
         developers = json_result2['result']['developers']
         assert len(developers) == 1
-
-    async def test_modify_issue_status(self, client):
-        owner_id = str(uuid.uuid4())
-        issue_id = await self.create_issue(client=client,
-                                           product_id=str(uuid.uuid4()),
-                                           owner_id=owner_id,
-                                           title='反馈1')
-        issue = await self.get_issue_by_id(client, issue_id)
-        assert issue['status'] == 'opening'
-
-        url = f'/service/v1/issue/{issue_id}/status'
-        # 修改状态
-        await client.put(url, json={'user_id': owner_id, 'status': 'closed'})
-        issue = await self.get_issue_by_id(client, issue_id)
-        assert issue['status'] == 'closed'
-
-        # 非创建人来关闭
-        error_response = await client.put(url,
-                                          json={
-                                              'user_id': str(uuid.uuid4()),
-                                              'status': 'opening'
-                                          })
-        assert error_response.status == 200
-        error_result = await error_response.json()
-        assert error_result['error_type'] == 'permission_denied'
-        assert error_result['message'] == '没有权限'

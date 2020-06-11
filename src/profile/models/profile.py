@@ -29,12 +29,3 @@ class Profile(AioModel):
         profiles['updated_at'] = datetime.utcnow()
         new_profile = await self.async_update(**profiles)
         return new_profile
-
-    @classmethod
-    async def get_role_id(cls, user_id):
-        try:
-            profile = await Profile.async_get(user_id=user_id)
-        except Profile.DoesNotExist:
-            return None
-
-        return profile.role_id

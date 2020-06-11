@@ -41,29 +41,15 @@ class Issue(AioModel):
 
         return issue
 
-    async def update_content(self, **new_content):
-        new_content['updated_at'] = datetime.utcnow()
-        return await self.async_update(**new_content)
+    async def handle_developer(self, developer_id):
+        developer_ids = list(self.developer_ids)
+        try:
+            developer_ids.remove(developer_id)
+        except ValueError:
+            # 如果不存在则添加
+            developer_ids.append(developer_id)
 
-    async def close_issue(self):
-        self.status = self.STATUS_CLOSED
-        await self.async_save()
-
-    async def open_issue(self):
-        self.status = self.STATUS_OPENING
-        await self.async_save()
-
-    async def handle_developers(self, developer_ids):
-        current_developer_ids = list(self.developer_ids)
-        for developer_id in developer_ids:
-            try:
-                current_developer_ids.remove(developer_id)
-            except ValueError:
-                # 如果不存在则添加
-                current_developer_ids.append(developer_id)
-
-        self.developer_ids = current_developer_ids
-        await self.async_save()
+        self.developer_ids = developer_ids
 
     async def handle_tags(self, tags_name):
         tags = list(self.tags)

@@ -1,9 +1,9 @@
 from comment.models.comment import Comment
 from comment.models.serializers import (CommentSerializer,
                                         CreateCommentSerializer,
-                                        ListCommentsByIssueIdSerializer,
                                         ListCommentsSerializer)
-from libs.sanic_api.views import ListView, PostView, ok_response
+from issue.models.serializers import IssueIdSerializer
+from libs.sanic_api.views import ListView, PostView
 
 
 class CreateCommentService(PostView):
@@ -23,23 +23,11 @@ class CreateCommentService(PostView):
 class ListCommentsByIssueIdService(ListView):
     """列出评论
     """
-    args_deserializer_class = ListCommentsByIssueIdSerializer
+    list_result_name = 'comments'
+    args_deserializer_class = IssueIdSerializer
     list_serializer_class = ListCommentsSerializer
 
     async def filter_objects(self):
         comments = await Comment.objects.filter(
             issue_id=self.validated_data['issue_id']).async_all()
         return sorted(comments, key=lambda comment: comment.created_at)
-
-    def response(self, results):
-        start = self.validated_data.get('start')
-        limit = self.validated_data.get('limit')
-        paged_comments = results[start:start + limit]
-
-        _serializer = self.list_serializer_class()
-        return ok_response({
-            'comments':
-            _serializer.dump(paged_comments, many=True),
-            'count':
-            len(results)
-        })

@@ -3,7 +3,6 @@ from profile.models.profile import Profile
 from marshmallow import Schema, ValidationError, fields, validates
 
 from issue.models.issue import Issue
-from shared.serializers import PagedResourceSerializer
 from tag.models.tag import Tag
 
 
@@ -22,9 +21,9 @@ class IssueSerializer(Schema):
     issue_id = fields.UUID()
     owner = fields.Method('get_owner')
     tags = fields.Method('get_tags')
-    developers = fields.Method('get_developers')
     title = fields.Str()
     description = fields.Str()
+    developer_ids = fields.List(cls_or_instance=fields.UUID)
     status = fields.Str()
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
@@ -67,7 +66,7 @@ class IssueSerializer(Schema):
                 continue
 
             result.append({
-                'user_id': str(profile.user_id),
+                'user_id': profile.user_id,
                 'nickname': profile.nickname
             })
         return result
@@ -107,23 +106,35 @@ class StatisticsSerializer(Schema):
     dislikes = fields.Integer()
 
 
-class MultiQueryIssuesSerializer(PagedResourceSerializer):
+class MultiQueryIssuesSerializer(Schema):
     """反序列化 查询issue的数据
     """
     product_id = fields.UUID(required=True)
     status = fields.Str(required=True)
+    limit = fields.Integer(missing=10)
+    start = fields.Integer(missing=0)
 
     @validates('status')
     def validate_status(self, value):
         if value not in [Issue.STATUS_OPENING, Issue.STATUS_CLOSED]:
             raise ValidationError('Only accept "opening" or "closed"')
 
+    @validates('limit')
+    def validate_limit(self, value):
+        if value < 0 or 20 < value:
+            raise ValidationError('Only accept between 0 and 20')
+
+    @validates('start')
+    def validate_start(self, value):
+        if value < 0:
+            raise ValidationError('Only accept greater than 0')
+
 
 class AssignIssueSerializer(Schema):
     """委派给开发人员
     """
     issue_id = fields.UUID(required=True)
-    developer_ids = fields.List(cls_or_instance=fields.UUID, required=True)
+    developer_id = fields.UUID(required=True)
 
 
 class UpdateIssueTagSerializer(Schema):
@@ -138,26 +149,8 @@ class DeveloperSerializer(Schema):
     nickname = fields.Str()
 
 
-class MultiGetDeveloperSerializer(PagedResourceSerializer):
+class MultiGetDeveloperSerializer(Schema):
     issue_id = fields.UUID(required=True)
     nickname = fields.Str(missing='')
-
-
-class ModifyIssueStatusSerializer(Schema):
-    issue_id = fields.UUID(required=True)
-    user_id = fields.UUID(required=True)
-    status = fields.Str(required=True)
-
-    @validates('status')
-    def validate_status(self, value):
-        if value not in [Issue.STATUS_OPENING, Issue.STATUS_CLOSED]:
-            raise ValidationError('Only accept opening or closed')
-
-
-class UpdateIssueSerializer(Schema):
-    """更新需求
-    """
-    issue_id = fields.UUID(required=True)
-    owner_id = fields.UUID(required=True)
-    title = fields.Str()
-    description = fields.Str()
+    limit = fields.Integer(missing=15)
+    start = fields.Integer(missing=0)

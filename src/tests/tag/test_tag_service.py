@@ -1,11 +1,10 @@
 class TagService:
-    async def create_tag(self, client, name, description, color):
+    async def create_tag(self, client, name, description):
         url = '/service/v1/tag'
         response = await client.post(url,
                                      json={
                                          'name': name,
-                                         'description': description,
-                                         'color': color
+                                         'description': description
                                      })
         assert response.status == 200
         json_result = await response.json()
@@ -18,8 +17,7 @@ class TestTagService(TagService):
         response = await client.post(url,
                                      json={
                                          'name': 'Bug',
-                                         'description': '程序运行异常',
-                                         'color': '#eb4034'
+                                         'description': '程序运行异常'
                                      })
         assert response.status == 200
         json_result = await response.json()
@@ -27,12 +25,11 @@ class TestTagService(TagService):
 
         assert json_result['result']['name'] == 'Bug'
         assert json_result['result']['description'] == '程序运行异常'
-        assert json_result['result']['color'] == '#eb4034'
 
     async def test_list_tags(self, client):
-        await self.create_tag(client, 'Bug', 'Bug', '#eb4034')
-        await self.create_tag(client, 'Help', 'Help', '#eb4034')
-        await self.create_tag(client, 'Enhancement', 'Enhancement', '#eb4034')
+        await self.create_tag(client, 'Bug', 'Bug')
+        await self.create_tag(client, 'Help', 'Help')
+        await self.create_tag(client, 'Enhancement', 'Enhancement')
 
         url = '/service/v1/tags'
         response = await client.get(url)
