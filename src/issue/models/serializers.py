@@ -52,6 +52,7 @@ class IssueSerializer(Schema):
             result.append({
                 'name': tag.name,
                 'description': tag.description,
+                'color': tag.color,
                 'checked': checked
             })
 
