@@ -22,6 +22,7 @@ for url, view, methods in api_urls:
 # 内部服务使用的 api
 ##########################
 service_urls = [('/tag', service.CreateTagService.as_view(), ['POST']),
+                ('/tags', service.MultiCreateTagsService.as_view(), ['POST']),
                 ('/tags', service.ListTagsService.as_view(), ['GET'])]
 tag_service_blueprint = Blueprint('tag_service', url_prefix='/service/v1')
 for url, view, methods in service_urls:

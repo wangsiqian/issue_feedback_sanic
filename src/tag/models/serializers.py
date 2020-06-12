@@ -18,6 +18,10 @@ class CreateTagSerializer(Schema):
             raise ValidationError('Invalid color!')
 
 
+class MultiCreateTagsSerializer(Schema):
+    tags = fields.Nested(CreateTagSerializer, required=True, many=True)
+
+
 class TagSerializer(Schema):
     """序列化标签
     """
