@@ -162,3 +162,16 @@ class UpdateIssueSerializer(Schema):
     owner_id = fields.UUID(required=True)
     title = fields.Str()
     description = fields.Str()
+
+
+class IssueIdAndUserIdSerializer(Schema):
+    """反序列化issue_id 和 user_id
+    """
+    issue_id = fields.UUID(required=True)
+    user_id = fields.UUID(required=True)
+
+
+class OpinionSerializer(Schema):
+    """序列化观点
+    """
+    opinion = fields.Str()

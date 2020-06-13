@@ -1,7 +1,7 @@
 from issue.models.serializers import IssueIdSerializer
 from issue.service import (AssignIssueService, CreateIssueService,
-                           GetIssueByIdService, IssueVoteService,
-                           ListDevelopersByIssueService,
+                           GetIssueByIdService, GetUserOpinionByIdService,
+                           IssueVoteService, ListDevelopersByIssueService,
                            ListIssuesByProductIdService,
                            ModifyIssueStatusService, UpdateIssueService,
                            UpdateIssueTagService)
@@ -40,4 +40,8 @@ class ModifyIssueStatusApi(ModifyIssueStatusService):
 
 
 class UpdateIssueApi(UpdateIssueService):
+    pass
+
+
+class GetUserOpinionByIdApi(GetUserOpinionByIdService):
     pass

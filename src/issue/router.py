@@ -41,7 +41,10 @@ api_urls = [('/issue', jwt_wrapper(api.CreateIssueApi.as_view(),
                          )), ['GET']),
             ('/issue/<issue_id>/status',
              jwt_wrapper(api.ModifyIssueStatusApi.as_view(),
-                         required=True), ['PUT'])]
+                         required=True), ['PUT']),
+            ('/issue/<issue_id>/user/<user_id>/opinion',
+             jwt_wrapper(api.GetUserOpinionByIdApi.as_view(),
+                         required=True), ['GET'])]
 for url, view, methods in api_urls:
     issue_api_blueprint.add_route(view, url, methods=methods)
 
@@ -65,6 +68,8 @@ service_urls = [
      service.ListDevelopersByIssueService.as_view(), ['GET']),
     ('/issue/<issue_id>/status', service.ModifyIssueStatusService.as_view(),
      ['PUT']),
+    ('/issue/<issue_id>/user/<user_id>/opinion',
+     service.GetUserOpinionByIdService.as_view(), ['GET'])
 ]
 issue_service_blueprint = Blueprint('issue_service', url_prefix='/service/v1')
 for url, view, methods in service_urls:
