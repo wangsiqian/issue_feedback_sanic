@@ -15,7 +15,10 @@ statistics_api_blueprint = Blueprint('user_api', version='1')
 
 api_urls = [('/statistics/user/<owner_id>',
              jwt_wrapper(api.CountIssueByUserApi.as_view(),
-                         role_ids=(app.config.ROLE_USER, )), ['GET'])]
+                         role_ids=(app.config.ROLE_USER, )), ['GET']),
+            ('/statistics/developer/<developer_id>',
+             jwt_wrapper(api.CountIssueByDeveloperApi.as_view(),
+                         role_ids=(app.config.ROLE_DEVELOPER, )), ['GET'])]
 for url, view, methods in api_urls:
     statistics_api_blueprint.add_route(view, url, methods=methods)
 
@@ -23,7 +26,9 @@ for url, view, methods in api_urls:
 # 内部服务使用的 api
 ##########################
 service_urls = [('/statistics/user/<owner_id>',
-                 service.CountIssueByUserService.as_view(), ['GET'])]
+                 service.CountIssueByUserService.as_view(), ['GET']),
+                ('/statistics/developer/<developer_id>',
+                 service.CountIssueByDeveloperService.as_view(), ['GET'])]
 statistics_service_blueprint = Blueprint('user_service',
                                          url_prefix='/service/v1')
 for url, view, methods in service_urls:

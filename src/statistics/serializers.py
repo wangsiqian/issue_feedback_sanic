@@ -7,8 +7,21 @@ class OwnerIdSerializer(Schema):
     owner_id = fields.UUID(required=True)
 
 
+class DeveloperIdSerializer(Schema):
+    """用于反序列化 developer_id
+    """
+    developer_id = fields.UUID(required=True)
+
+
 class UserCounterSerializer(Schema):
     """序列化用户统计数据
     """
     total_count = fields.Integer()
     solved_count = fields.Integer()
+
+
+class DeveloperCounterSerializer(Schema):
+    """序列化开发人员统计数据
+    """
+    opening_count = fields.Integer()
+    closed_count = fields.Integer()

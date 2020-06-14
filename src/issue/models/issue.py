@@ -58,9 +58,14 @@ class Issue(AioModel):
         for developer_id in developer_ids:
             try:
                 current_developer_ids.remove(developer_id)
+                issue_by_developer = await IssueByDeveloper.async_get(
+                    developer_id=developer_id, issue_id=self.issue_id)
+                await issue_by_developer.async_delete()
             except ValueError:
                 # 如果不存在则添加
                 current_developer_ids.append(developer_id)
+                await IssueByDeveloper.new(developer_id=developer_id,
+                                           issue_id=self.issue_id)
 
         self.developer_ids = current_developer_ids
         await self.async_save()
@@ -105,6 +110,20 @@ class IssueByUser(AioModel):
     @classmethod
     async def new(cls, owner_id, issue_id):
         await IssueByUser.async_create(owner_id=owner_id, issue_id=issue_id)
+
+
+class IssueByDeveloper(AioModel):
+    """按开发人员分区
+    """
+    __table_name__ = 'issue_by_developer'
+    developer_id = columns.UUID(primary_key=True)
+    issue_id = columns.UUID(primary_key=True)
+    created_at = columns.DateTime(default=datetime.utcnow)
+
+    @classmethod
+    async def new(cls, developer_id, issue_id):
+        await IssueByDeveloper.async_create(developer_id=developer_id,
+                                            issue_id=issue_id)
 
 
 class IssueVoteRecord(AioModel):
