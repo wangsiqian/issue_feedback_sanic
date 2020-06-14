@@ -1,4 +1,5 @@
 from profile import profile, profile_api_blueprint, profile_service_blueprint
+from statistics import statistics_api_blueprint, statistics_service_blueprint
 
 from account import account, account_api_blueprint, account_service_blueprint
 from comment import comment, comment_api_blueprint, comment_service_blueprint
@@ -25,7 +26,10 @@ blueprints = [
     comment_service_blueprint,
     # tag
     tag_api_blueprint,
-    tag_service_blueprint
+    tag_service_blueprint,
+    # statistic
+    statistics_api_blueprint,
+    statistics_service_blueprint
 ]
 
 # models
