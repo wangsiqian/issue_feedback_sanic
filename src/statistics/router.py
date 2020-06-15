@@ -18,7 +18,10 @@ api_urls = [('/statistics/user/<owner_id>',
                          role_ids=(app.config.ROLE_USER, )), ['GET']),
             ('/statistics/developer/<developer_id>',
              jwt_wrapper(api.CountIssueByDeveloperApi.as_view(),
-                         role_ids=(app.config.ROLE_DEVELOPER, )), ['GET'])]
+                         role_ids=(app.config.ROLE_DEVELOPER, )), ['GET']),
+            ('/statistics/manager/<manager_id>',
+             jwt_wrapper(api.CountIssueByManagerApi.as_view(),
+                         role_ids=(app.config.ROLE_MANAGER, )), ['GET'])]
 for url, view, methods in api_urls:
     statistics_api_blueprint.add_route(view, url, methods=methods)
 
@@ -28,7 +31,9 @@ for url, view, methods in api_urls:
 service_urls = [('/statistics/user/<owner_id>',
                  service.CountIssueByUserService.as_view(), ['GET']),
                 ('/statistics/developer/<developer_id>',
-                 service.CountIssueByDeveloperService.as_view(), ['GET'])]
+                 service.CountIssueByDeveloperService.as_view(), ['GET']),
+                ('/statistics/manager/<manager_id>',
+                 service.CountIssueByManagerService.as_view(), ['GET'])]
 statistics_service_blueprint = Blueprint('user_service',
                                          url_prefix='/service/v1')
 for url, view, methods in service_urls:

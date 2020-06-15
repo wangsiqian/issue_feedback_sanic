@@ -25,3 +25,17 @@ class DeveloperCounterSerializer(Schema):
     """
     opening_count = fields.Integer()
     closed_count = fields.Integer()
+
+
+class ManagerIdSerializer(Schema):
+    """用于反序列化 manager_id
+    """
+    manager_id = fields.UUID(required=True)
+
+
+class ManagerCounterSerializer(Schema):
+    """序列化管理人员统计数据
+    """
+    total_count = fields.Integer()
+    accepted_count = fields.Integer()
+    closed_count = fields.Integer()

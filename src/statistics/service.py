@@ -1,9 +1,14 @@
+from datetime import datetime
 from statistics.serializers import (DeveloperCounterSerializer,
-                                    DeveloperIdSerializer, OwnerIdSerializer,
+                                    DeveloperIdSerializer,
+                                    ManagerCounterSerializer,
+                                    ManagerIdSerializer, OwnerIdSerializer,
                                     UserCounterSerializer)
 
-from issue.models.issue import Issue, IssueByDeveloper, IssueByUser
+from issue.models.issue import (Issue, IssueByDeveloper, IssueByProduct,
+                                IssueByUser)
 from libs.sanic_api.views import GetView
+from product.models.product import Product
 
 
 class CountIssueByUserService(GetView):
@@ -55,3 +60,45 @@ class CountIssueByDeveloperService(GetView):
                 opening_count += 1
 
         return {'opening_count': opening_count, 'closed_count': closed_count}
+
+
+class CountIssueByManagerService(GetView):
+    args_deserializer_class = ManagerIdSerializer
+    get_serializer_class = ManagerCounterSerializer
+
+    async def get_object(self):
+        products = await Product.objects.filter(
+            manager_id=self.validated_data['manager_id']).async_all()
+
+        issues = []
+        for product in products:
+            # 获取管理员所有产品的需求
+            issues.extend(await IssueByProduct.objects.filter(
+                product_id=product.product_id).async_all())
+        issues.sort(key=lambda _issue: _issue.created_at, reverse=True)
+
+        now = datetime.utcnow()
+        today = datetime(now.year, now.month, now.day, 0, 0, 0)
+        # 过滤掉今天以前的需求
+        issues_of_today = list(
+            filter(lambda _issue: today < _issue.created_at, issues))
+        total_count = len(issues_of_today)
+        accepted_count = 0
+        closed_count = 0
+        for issue in issues_of_today:
+            try:
+                issue = await Issue.async_get(issue_id=issue.issue_id)
+            except Issue.DoesNotExist:
+                continue
+
+            if issue.status == issue.STATUS_CLOSED:
+                closed_count += 1
+            elif issue.developer_ids:
+                # 已经分配的 issue
+                accepted_count += 1
+
+        return {
+            'total_count': total_count,
+            'accepted_count': accepted_count,
+            'closed_count': closed_count
+        }

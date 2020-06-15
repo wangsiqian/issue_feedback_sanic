@@ -1,4 +1,5 @@
 from statistics.service import (CountIssueByDeveloperService,
+                                CountIssueByManagerService,
                                 CountIssueByUserService)
 
 
@@ -7,4 +8,8 @@ class CountIssueByUserApi(CountIssueByUserService):
 
 
 class CountIssueByDeveloperApi(CountIssueByDeveloperService):
+    pass
+
+
+class CountIssueByManagerApi(CountIssueByManagerService):
     pass
