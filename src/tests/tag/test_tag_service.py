@@ -39,3 +39,30 @@ class TestTagService(TagService):
 
         tags = json_result['result']['tags']
         assert len(tags) == 3
+
+    async def test_create_multi_tags(self, client):
+        response = await client.post('/service/v1/tags',
+                                     json={
+                                         'tags': [{
+                                             'name': 'Bug',
+                                             'description': '程序运行异常',
+                                             'color': '#eb4034'
+                                         }, {
+                                             'name': 'duplicate',
+                                             'description': '存在类似的反馈',
+                                             'color': '#eb4034'
+                                         }]
+                                     })
+        assert response.status == 200
+        json_result = await response.json()
+        assert json_result['ok']
+
+        # 获取 tags
+        url = '/service/v1/tags'
+        response = await client.get(url)
+        assert response.status == 200
+        json_result = await response.json()
+        assert json_result['ok']
+
+        tags = json_result['result']['tags']
+        assert len(tags) == 2

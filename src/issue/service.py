@@ -6,13 +6,16 @@ from issue.models.issue import (Issue, IssueByProduct, IssueVoteRecord,
                                 IssueVoteStatistics)
 from issue.models.serializers import (AssignIssueSerializer,
                                       CreateIssueSerializer,
-                                      DeveloperSerializer, IssueIdSerializer,
-                                      IssueSerializer,
+                                      DeveloperSerializer,
+                                      IssueIdAndUserIdSerializer,
+                                      IssueIdSerializer, IssueSerializer,
                                       IssueVoteRecordSerializer,
                                       IssueVoteSerializer,
                                       MultiGetDeveloperSerializer,
                                       MultiQueryIssuesSerializer,
                                       StatisticsSerializer,
+                                      OpinionSerializer, StatisticsSerializer,
+                                      UpdateIssueSerializer,
                                       UpdateIssueTagSerializer)
 from libs.sanic_api.views import (GetView, ListView, PostView, PutView,
                                   ok_response)
@@ -230,3 +233,38 @@ class ListDevelopersByIssueService(ListView):
             'developers': _serializer.dump(profile, many=True),
             'count': len(results)
         })
+
+
+class UpdateIssueService(PutView):
+    """更新需求
+    """
+    args_deserializer_class = UpdateIssueSerializer
+
+    async def save(self):
+        try:
+            issue = await Issue.async_get(
+                issue_id=self.validated_data['issue_id'])
+        except Issue.DoesNotExist:
+            raise IssueNotFound
+
+        if self.validated_data['owner_id'] != issue.owner_id:
+            raise PermissionDenied
+
+        await issue.update_content(**self.validated_data)
+
+
+class GetUserOpinionByIdService(GetView):
+    """获取用户对该需求的观点
+    """
+    args_deserializer_class = IssueIdAndUserIdSerializer
+    get_serializer_class = OpinionSerializer
+
+    async def get_object(self):
+        try:
+            record = await IssueVoteRecord.async_get(
+                issue_id=self.validated_data['issue_id'],
+                user_id=self.validated_data['user_id'])
+        except IssueVoteRecord.DoesNotExist:
+            return {'opinion': IssueVoteRecord.OPINION_NONE}
+
+        return record

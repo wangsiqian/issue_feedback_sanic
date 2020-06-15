@@ -29,5 +29,4 @@ class GetRoleIdApi(GetRoleIdService):
 
 
 class ModifyPasswordApi(ModifyPasswordService):
-    args_deserializer_class = CreateAccountApiSerializer
     post_serializer_class = None

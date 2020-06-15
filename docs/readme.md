@@ -14,7 +14,7 @@
 {
   "ok": true,
   "result": {
-    "validate_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50X2lkIjoiMTIzNDU2QHFxLmNvbSIsInZhbGlkYXRlX2NvZGUiOiI3OTQ3MDYiLCJleHAiOjE1OTE4NjY0ODl9.9EwGbiwUfbZ-zQJj4bLpO29-3jc344kJ2QW5aV5Q25s"
+    "validate_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50X2lkIjoiMTIzNDU2QHFxLmNvbSIsInZhbGlkYXRlX2NvZGUiOiI0ODM4NTAiLCJleHAiOjE1OTIyMDc0MTh9.VCt5Dy092CxI3S8CahaWHPfWAJ3hRrSzYWFRahkqDkc"
   }
 }
 ```
@@ -71,8 +71,8 @@
   "ok": true,
   "result": {
     "role_id": "USER",
-    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiZjRhMzUzMWUtN2U2Mi00OGRhLWIwY2QtYzBiN2E5ODMwYWJkIiwicm9sZV9pZCI6IlVTRVIiLCJleHAiOjE1OTIwMzkxMjh9.hgNjipsV2o9DPZbTE6OBA1EpdS7kcmDqup3UP14Ve7E",
-    "user_id": "f4a3531e-7e62-48da-b0cd-c0b7a9830abd"
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiNjYzOGRkMjItMDViOC00Y2I4LWI0YzUtOTMzMGE4MjhlYjNiIiwicm9sZV9pZCI6IlVTRVIiLCJleHAiOjE1OTIzODAwNTl9.OH2nFS9rbYHeDB_b0YFykrbrOUaf8kp60inQhqYbqfw",
+    "user_id": "6638dd22-05b8-4cb8-b4c5-9330a828eb3b"
   }
 }
 ```

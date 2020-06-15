@@ -8,6 +8,10 @@ class CreateTagSerializer(Schema):
     description = fields.Str(required=True)
 
 
+class MultiCreateTagsSerializer(Schema):
+    tags = fields.Nested(CreateTagSerializer, required=True, many=True)
+
+
 class TagSerializer(Schema):
     """序列化标签
     """

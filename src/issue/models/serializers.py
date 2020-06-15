@@ -51,6 +51,7 @@ class IssueSerializer(Schema):
             result.append({
                 'name': tag.name,
                 'description': tag.description,
+                'color': tag.color,
                 'checked': checked
             })
 
@@ -152,5 +153,41 @@ class DeveloperSerializer(Schema):
 class MultiGetDeveloperSerializer(Schema):
     issue_id = fields.UUID(required=True)
     nickname = fields.Str(missing='')
+<<<<<<< HEAD
     limit = fields.Integer(missing=15)
     start = fields.Integer(missing=0)
+=======
+
+
+class ModifyIssueStatusSerializer(Schema):
+    issue_id = fields.UUID(required=True)
+    user_id = fields.UUID(required=True)
+    status = fields.Str(required=True)
+
+    @validates('status')
+    def validate_status(self, value):
+        if value not in [Issue.STATUS_OPENING, Issue.STATUS_CLOSED]:
+            raise ValidationError('Only accept opening or closed')
+
+
+class UpdateIssueSerializer(Schema):
+    """更新需求
+    """
+    issue_id = fields.UUID(required=True)
+    owner_id = fields.UUID(required=True)
+    title = fields.Str()
+    description = fields.Str()
+
+
+class IssueIdAndUserIdSerializer(Schema):
+    """反序列化issue_id 和 user_id
+    """
+    issue_id = fields.UUID(required=True)
+    user_id = fields.UUID(required=True)
+
+
+class OpinionSerializer(Schema):
+    """序列化观点
+    """
+    opinion = fields.Str()
+>>>>>>> a1afdc34e1dc0610e0e3bdb269842644037690c6

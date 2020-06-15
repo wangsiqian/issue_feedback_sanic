@@ -31,3 +31,15 @@ class GetIssueByIdApi(GetIssueByIdService):
 
 class ListDevelopersByIssueApi(ListDevelopersByIssueService):
     pass
+
+
+class ModifyIssueStatusApi(ModifyIssueStatusService):
+    pass
+
+
+class UpdateIssueApi(UpdateIssueService):
+    pass
+
+
+class GetUserOpinionByIdApi(GetUserOpinionByIdService):
+    pass
