@@ -302,3 +302,35 @@ class TestIssueService(IssueService, TagService, ProfileService):
         assert json_result2['ok']
 
         assert len(json_result2['result']['issues']) == 0
+
+    async def test_list_issues_by_developer_id(self, client):
+        issue_id = await self.create_issue(client, str(uuid.uuid4()),
+                                           str(uuid.uuid4()), '反馈1')
+        await self.create_issue(client, str(uuid.uuid4()), str(uuid.uuid4()),
+                                '反馈1')
+        await self.create_issue(client, str(uuid.uuid4()), str(uuid.uuid4()),
+                                '反馈1')
+        await self.create_issue(client, str(uuid.uuid4()), str(uuid.uuid4()),
+                                '反馈1')
+
+        developer_id = str(uuid.uuid4())
+        # 分配反馈
+        await client.put(f'/service/v1/issue/{issue_id}/assign',
+                         json={'developer_ids': [developer_id]})
+
+        url = f'/service/v1/issue/developer/{developer_id}'
+        # 按开发者查询
+        response = await client.get(url)
+        assert response.status == 200
+        json_result = await response.json()
+        assert json_result['ok']
+
+        assert len(json_result['result']['issues']) == 1
+
+        # 按状态过滤
+        response2 = await client.get(f'{url}?status=closed')
+        assert response2.status == 200
+        json_result2 = await response2.json()
+        assert json_result2['ok']
+
+        assert len(json_result2['result']['issues']) == 0

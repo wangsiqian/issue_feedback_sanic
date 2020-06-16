@@ -2,8 +2,9 @@ from profile.models.profile import Profile
 
 from app import app
 from issue.exceptions import IssueNotFound, StatisticsNotFount
-from issue.models.issue import (Issue, IssueByProduct, IssueByUser,
-                                IssueVoteRecord, IssueVoteStatistics)
+from issue.models.issue import (Issue, IssueByDeveloper, IssueByProduct,
+                                IssueByUser, IssueVoteRecord,
+                                IssueVoteStatistics)
 from issue.models.serializers import (AssignIssueSerializer,
                                       CreateIssueSerializer,
                                       DeveloperSerializer,
@@ -11,6 +12,7 @@ from issue.models.serializers import (AssignIssueSerializer,
                                       IssueIdSerializer, IssueSerializer,
                                       IssueVoteRecordSerializer,
                                       IssueVoteSerializer,
+                                      ListIssueByDeveloperSerializer,
                                       ListIssueByUserSerializer,
                                       ListIssuesSerializer,
                                       ModifyIssueStatusSerializer,
@@ -328,6 +330,38 @@ class ListIssuesByOwnerIdService(ListView):
             if status:
                 if issue.status == status:
                     # 按状态过滤
+                    issues.append(issue)
+            else:
+                issues.append(issue)
+
+        return issues
+
+
+class ListIssuesByDeveloperIdService(ListView):
+    """开发人员个人中心列出自己创建的需求
+    """
+    list_result_name = 'issues'
+    args_deserializer_class = ListIssueByDeveloperSerializer
+    list_serializer_class = ListIssuesSerializer
+
+    async def filter_objects(self):
+        issues_by_developer = await IssueByDeveloper.objects.filter(
+            developer_id=self.validated_data['developer_id']).async_all()
+        start = self.validated_data['start']
+        limit = self.validated_data['limit']
+        paged_issues = issues_by_developer[start:start + limit]
+
+        issues = []
+        status = self.validated_data.get('status')
+        for issue in paged_issues:
+            try:
+                issue = await Issue.async_get(issue_id=issue.issue_id)
+            except Issue.DoesNotExist:
+                continue
+
+            if status:
+                # 如果按状态过滤
+                if issue.status == status:
                     issues.append(issue)
             else:
                 issues.append(issue)

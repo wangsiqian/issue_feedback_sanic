@@ -189,6 +189,18 @@ class ListIssueByUserSerializer(PagedResourceSerializer):
             raise ValueError('Only accept opening or closed')
 
 
+class ListIssueByDeveloperSerializer(PagedResourceSerializer):
+    """反序列化开发人员查看自己认领的反馈
+    """
+    developer_id = fields.UUID(required=True)
+    status = fields.Str()
+
+    @validates('status')
+    def validate_status(self, value):
+        if value and value not in [Issue.STATUS_OPENING, Issue.STATUS_CLOSED]:
+            raise ValueError('Only accept opening or closed')
+
+
 class ListIssuesSerializer(Schema):
     """序列化列出需求的数据
     """

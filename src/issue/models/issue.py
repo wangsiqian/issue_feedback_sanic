@@ -116,7 +116,7 @@ class IssueByDeveloper(AioModel):
     """按开发人员分区
     """
     __table_name__ = 'issue_by_developer'
-    developer_id = columns.UUID(primary_key=True)
+    developer_id = columns.UUID(partition_key=True)
     issue_id = columns.UUID(primary_key=True)
     created_at = columns.DateTime(default=datetime.utcnow)
 

@@ -74,7 +74,9 @@ service_urls = [
     ('/issue/<issue_id>/user/<user_id>/opinion',
      service.GetUserOpinionByIdService.as_view(), ['GET']),
     ('/issue/owner/<owner_id>', service.ListIssuesByOwnerIdService.as_view(),
-     ['GET'])
+     ['GET']),
+    ('/issue/developer/<developer_id>',
+     service.ListIssuesByDeveloperIdService.as_view(), ['GET'])
 ]
 issue_service_blueprint = Blueprint('issue_service', url_prefix='/service/v1')
 for url, view, methods in service_urls:
