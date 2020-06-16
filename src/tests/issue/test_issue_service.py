@@ -264,3 +264,41 @@ class TestIssueService(IssueService, TagService, ProfileService):
         error_result = await error_response.json()
         assert error_result['error_type'] == 'permission_denied'
         assert error_result['message'] == '没有权限'
+
+    async def test_list_issues_by_owner_id(self, client):
+        owner_id = str(uuid.uuid4())
+        await self.create_issue(client=client,
+                                product_id=str(uuid.uuid4()),
+                                owner_id=owner_id,
+                                title='反馈1')
+        await self.create_issue(client=client,
+                                product_id=str(uuid.uuid4()),
+                                owner_id=owner_id,
+                                title='反馈2')
+        await self.create_issue(client=client,
+                                product_id=str(uuid.uuid4()),
+                                owner_id=owner_id,
+                                title='反馈3')
+
+        # 另一个用户创建的需求
+        await self.create_issue(client=client,
+                                product_id=str(uuid.uuid4()),
+                                owner_id=str(uuid.uuid4()),
+                                title='反馈3')
+
+        url = f'/service/v1/issue/owner/{owner_id}'
+        # 按创建者查询
+        response = await client.get(url)
+        assert response.status == 200
+        json_result = await response.json()
+        assert json_result['ok']
+
+        assert len(json_result['result']['issues']) == 3
+
+        # 按状态过滤
+        response2 = await client.get(f'{url}?status=closed')
+        assert response2.status == 200
+        json_result2 = await response2.json()
+        assert json_result2['ok']
+
+        assert len(json_result2['result']['issues']) == 0

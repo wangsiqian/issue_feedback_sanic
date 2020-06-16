@@ -175,3 +175,24 @@ class OpinionSerializer(Schema):
     """序列化观点
     """
     opinion = fields.Str()
+
+
+class ListIssueByUserSerializer(PagedResourceSerializer):
+    """反序列化用户查看自己提出的反馈
+    """
+    owner_id = fields.UUID(required=True)
+    status = fields.Str()
+
+    @validates('status')
+    def validate_status(self, value):
+        if value and value not in [Issue.STATUS_OPENING, Issue.STATUS_CLOSED]:
+            raise ValueError('Only accept opening or closed')
+
+
+class ListIssuesSerializer(Schema):
+    """序列化列出需求的数据
+    """
+    issue_id = fields.UUID()
+    title = fields.Str()
+    status = fields.Str()
+    created_at = fields.DateTime()
