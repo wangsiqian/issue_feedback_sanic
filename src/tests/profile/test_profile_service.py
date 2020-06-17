@@ -79,7 +79,8 @@ class TestProfileService:
         await client.put(f'/service/v1/profile/{user_id}',
                          json={
                              'nickname': 'tester2',
-                             'gender': 0
+                             'gender': 0,
+                             'avatar': 'http://www.github.com'
                          })
 
         # 再次查询
@@ -90,3 +91,4 @@ class TestProfileService:
         new_profile = json_result2['result']
         assert new_profile['nickname'] == 'tester2'
         assert new_profile['gender'] == 0
+        assert new_profile['avatar'] == 'http://www.github.com'
