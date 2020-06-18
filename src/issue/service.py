@@ -173,7 +173,6 @@ class GetIssueByIdService(GetView):
     """通过 issue id 获取 issue
     """
     args_deserializer_class = IssueIdSerializer
-    get_serializer_class = IssueSerializer
 
     async def get_object(self):
         try:
@@ -182,7 +181,23 @@ class GetIssueByIdService(GetView):
         except Issue.DoesNotExist:
             raise IssueNotFound
 
-        return issue
+        issue_map = IssueSerializer().dump(issue)
+        # 获取统计信息
+        try:
+            statistics = await IssueVoteStatistics.async_get(
+                issue_id=issue.issue_id)
+        except IssueVoteStatistics.DoesNotExist:
+            issue_map.update({'likes': 0, 'dislikes': 0})
+        else:
+            issue_map.update({
+                'likes': statistics.likes,
+                'dislikes': statistics.dislikes,
+            })
+
+        return issue_map
+
+    async def serialize(self, result):
+        return result
 
 
 class ModifyIssueStatusService(PutView):

@@ -54,6 +54,21 @@ class TestIssueService(IssueService, TagService, ProfileService):
         assert issue['status'] == 'opening'
         assert issue['description'] == ''
 
+    async def test_get_issue_by_id(self, client):
+        issue_id = await self.create_issue(client=client,
+                                           product_id=str(uuid.uuid4()),
+                                           owner_id=str(uuid.uuid4()),
+                                           title='反馈')
+        url = f'/service/v1/issue/{issue_id}'
+        response = await client.get(url)
+        assert response.status == 200
+        json_result = await response.json()
+        assert json_result['ok']
+
+        assert json_result['result']['likes'] == 0
+        assert json_result['result']['dislikes'] == 0
+        assert json_result['result']['title'] == '反馈'
+
     async def test_user_vote_for_issue(self, client):
         user_id = str(uuid.uuid4())
         issue_id = await self.create_issue(client=client,
