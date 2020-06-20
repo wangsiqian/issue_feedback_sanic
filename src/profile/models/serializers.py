@@ -23,7 +23,7 @@ class UpdateProfileSerializer(Schema):
     user_id = fields.UUID(required=True)
     nickname = fields.Str()
     gender = fields.Integer()
-    avatar = fields.Url()
+    avatar = fields.Str()
 
 
 class ProfileSerializer(Schema):
