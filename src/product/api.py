@@ -1,10 +1,15 @@
+from libs.sanic_api.exceptions import PermissionDenied
 from product.service import (CreateProductService, DeleteProductByIdService,
                              ListProductByManagerService, ListProductsService,
                              UpdateProductByIdService)
 
 
 class CreateProductApi(CreateProductService):
-    pass
+    async def save(self):
+        if self.validated_data['manager_id'] != self.token_user_id:
+            raise PermissionDenied
+
+        return await super().save()
 
 
 class ListProductsApi(ListProductsService):
@@ -12,12 +17,24 @@ class ListProductsApi(ListProductsService):
 
 
 class ListProductByManagerIdApi(ListProductByManagerService):
-    pass
+    async def filter_objects(self):
+        if self.validated_data['manager_id'] != self.token_user_id:
+            raise PermissionDenied
+
+        return await super().filter_objects()
 
 
 class UpdateProductByIdApi(UpdateProductByIdService):
-    pass
+    async def save(self):
+        if self.validated_data['manager_id'] != self.token_user_id:
+            raise PermissionDenied
+
+        return await super().save()
 
 
 class DeleteProductByIdApi(DeleteProductByIdService):
-    pass
+    async def save(self):
+        if self.validated_data['manager_id'] != self.token_user_id:
+            raise PermissionDenied
+
+        return await super().save()

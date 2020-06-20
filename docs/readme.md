@@ -14,7 +14,7 @@
 {
   "ok": true,
   "result": {
-    "validate_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50X2lkIjoiMTIzNDU2QHFxLmNvbSIsInZhbGlkYXRlX2NvZGUiOiI0MTkwNzEiLCJleHAiOjE1OTE1OTE4MDV9.3D21E0gkOiNlVS-Yn1H6I-5xDHjd06xOCqOw_21jlCE"
+    "validate_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50X2lkIjoiMTIzNDU2QHFxLmNvbSIsInZhbGlkYXRlX2NvZGUiOiI5MDg4ODUiLCJleHAiOjE1OTI2MzQwNzN9.T0mUKBo7VNXnqyKTSR8I5S1IAYacUOldCT0fSlu8Foo"
   }
 }
 ```
@@ -71,8 +71,8 @@
   "ok": true,
   "result": {
     "role_id": "USER",
-    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiNTcxZDA0OTAtZGRkZi00YWVmLTlkMjMtMWRjZDM4N2ZiY2UxIiwicm9sZV9pZCI6IlVTRVIiLCJleHAiOjE1OTE3NjQ0MzF9.r30f9L7fKU0kIAR8zjdl0xpULsrlzZeKf-ZPuiPEVHg",
-    "user_id": "571d0490-dddf-4aef-9d23-1dcd387fbce1"
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiYWU1ZjJjYmUtZDUyZS00Y2I4LWEwOWEtOWVkYTQ2ZGJhMDZlIiwicm9sZV9pZCI6IlVTRVIiLCJleHAiOjE1OTI4MDY3MDF9.xVGiLLXpi5jG4Tr_zPjdkdZSrvMP2ZnHJ0si1qOxsKM",
+    "user_id": "ae5f2cbe-d52e-4cb8-a09a-9eda46dba06e"
   }
 }
 ```
@@ -104,10 +104,10 @@
   "ok": true,
   "result": {
     "content": "不错的建议",
-    "created_at": "2020-06-08T04:47:26.456119",
-    "issue_id": "67badb09-7712-4df8-8d42-c3ded42c4c96",
-    "receiver_id": "603fa22b-27e9-4ccc-8547-ad5634b3e811",
-    "user_id": "ec84f421-4575-4f8d-991f-aa29fabc9e7e"
+    "created_at": "2020-06-20T06:18:42.488378",
+    "issue_id": "5e638c14-7a1b-40b6-a065-661fcba7e983",
+    "receiver_id": "eb14983d-b85b-441c-998b-e0f9d87a5e42",
+    "user_id": "7e1b34ec-0195-4dda-994f-0b13cc84be00"
   }
 }
 ```
@@ -127,30 +127,31 @@
   "result": {
     "comments": [
       {
-        "comment_id": "93d65e5e-65f3-439a-bff1-c6b158ec1cf7",
+        "comment_id": "25919837-ebbd-481c-a243-afcc043a40e4",
         "content": "不错的建议",
-        "created_at": "2020-06-08T04:47:29.240000",
+        "created_at": "2020-06-20T06:18:46.488000",
         "owner": {}
       },
       {
-        "comment_id": "adf2ad84-79e8-4703-ae3d-72a4fc01f4ae",
+        "comment_id": "756ef26d-a018-4e98-a4c5-60d743f7b03a",
         "content": "不错的建议",
-        "created_at": "2020-06-08T04:47:29.267000",
+        "created_at": "2020-06-20T06:18:46.500000",
         "owner": {}
       },
       {
-        "comment_id": "4e7613a0-a9e3-4e18-8257-4d014478ac74",
+        "comment_id": "fc385e80-3bec-47fc-b893-821b1d43710a",
         "content": "不错的建议",
-        "created_at": "2020-06-08T04:47:29.298000",
+        "created_at": "2020-06-20T06:18:46.517000",
         "owner": {}
       },
       {
-        "comment_id": "487d5a88-efdf-4478-aa42-c0837f18ff9d",
+        "comment_id": "02c15948-03e1-491c-b408-3b5708e047ad",
         "content": "不错的建议",
-        "created_at": "2020-06-08T04:47:29.328000",
+        "created_at": "2020-06-20T06:18:46.528000",
         "owner": {}
       }
-    ]
+    ],
+    "count": 4
   }
 }
 ```
@@ -173,7 +174,7 @@
 {
   "ok": true,
   "result": {
-    "issue_id": "a7adc4b8-e569-4928-98c4-82d8037f7a6a"
+    "issue_id": "29de0a3e-51b2-42c5-8cff-26c9acf26bf2"
   }
 }
 ```
@@ -203,11 +204,11 @@
 {
   "ok": true,
   "result": {
-    "created_at": "2020-06-08T04:48:09.871147",
+    "created_at": "2020-06-20T06:19:59.851997",
     "description": "产品1的介绍",
-    "manager_id": "8e904f36-cd98-4588-ac09-dc23b1056876",
+    "manager_id": "a5791647-83e3-44f6-99d1-5cb954154a10",
     "name": "产品1",
-    "product_id": "d0a97333-d739-41b8-b5eb-045c3dd3fb54"
+    "product_id": "4985a25a-fd97-46a1-a522-6b89a2e7cd74"
   }
 }
 ```
@@ -228,11 +229,11 @@
   "result": {
     "products": [
       {
-        "created_at": "2020-06-08T04:48:19.746000",
-        "description": "产品1的介绍",
-        "manager_id": "b700c133-590a-4fa5-9e1c-2c82361f9d8a",
-        "name": "产品1",
-        "product_id": "7d0247ed-b2c1-45c1-80d6-76a26e962db6"
+        "created_at": "2020-06-20T06:20:06.548000",
+        "description": "4",
+        "manager_id": "2c8ca1d6-557c-441f-9b38-e1b57d28e539",
+        "name": "4",
+        "product_id": "490be88f-8742-494d-ba46-b8ac58bb1280"
       }
     ]
   }
@@ -275,7 +276,7 @@
     "gender": 0,
     "nickname": "tester",
     "role_id": "USER",
-    "user_id": "619c1b27-161b-4aca-8426-8831ee4d1304"
+    "user_id": "3cf30a9f-f1a7-4cba-9c74-b99bf8ce3b10"
   }
 }
 ```
@@ -313,14 +314,17 @@
   "result": {
     "tags": [
       {
+        "color": "#eb4034",
         "description": "Bug",
         "name": "Bug"
       },
       {
+        "color": "#eb4034",
         "description": "Enhancement",
         "name": "Enhancement"
       },
       {
+        "color": "#eb4034",
         "description": "Help",
         "name": "Help"
       }

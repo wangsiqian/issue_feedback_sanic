@@ -42,7 +42,7 @@ class AccountService:
         json_result = await response.json()
         assert json_result['ok']
 
-        return json_result['result']['token']
+        return json_result['result']
 
 
 class TestAccountService:

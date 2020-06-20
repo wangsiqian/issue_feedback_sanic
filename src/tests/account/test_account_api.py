@@ -25,24 +25,6 @@ class AccountApi:
                                      })
         assert response.status == 200
 
-    @classmethod
-    async def get_token(cls, client):
-        account_id = str(randint(1, 999999)).zfill(6) + '@qq.com'
-        password = '123456789@qq.com'
-        # 创建账号
-        await AccountApi.create_account(client, account_id, password)
-        # 登陆
-        response = await client.post('/service/v1/login',
-                                     json={
-                                         'account_id': account_id,
-                                         'password': password
-                                     })
-        assert response.status == 200
-        json_result = await response.json()
-        assert json_result['ok']
-
-        return json_result['result']['token']
-
 
 class TestAccountApi:
     @api_docs(title='发送验证码',

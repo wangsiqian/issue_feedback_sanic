@@ -1,4 +1,5 @@
 import logging
+import uuid
 from inspect import isawaitable
 
 from marshmallow.exceptions import ValidationError
@@ -54,14 +55,16 @@ def validation_error_response(validation_error, *args, **kwargs):
 class APIBaseView(HTTPMethodView):
     """扩展 class based view, 增加异常处理
     """
+    @property
+    def token_user_id(self):
+        jwt_payload = self.request.get('jwt_payload')
+        user_id = jwt_payload.get('user_id')
+        if user_id:
+            return uuid.UUID(user_id)
+
     def parse_json(self, request):
         """解析 request body 为 json
         """
-        # 如果使用 jwt 传递数据, 则不再解析 request body
-        jwt_payload = request.get('jwt_payload')
-        if jwt_payload:
-            return jwt_payload
-
         try:
             return request.json or {}
         except InvalidUsage:

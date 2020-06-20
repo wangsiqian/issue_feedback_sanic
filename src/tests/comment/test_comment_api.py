@@ -36,18 +36,21 @@ class TestCommentApi(CommentApi):
               headers={'Authorization': '用户 Token'})
     async def test_create_comment(self, client):
         url = '/v1/comment'
-        token = await AccountService.get_token(client, app.config.ROLE_USER)
-        response = await client.post(url,
-                                     json={
-                                         'issue_id': str(uuid.uuid4()),
-                                         'user_id': str(uuid.uuid4()),
-                                         'receiver_id': str(uuid.uuid4()),
-                                         'content': '不错的建议'
-                                     },
-                                     headers={'Authorization': token})
+        authorization = await AccountService.get_token(client,
+                                                       app.config.ROLE_USER)
+        response = await client.post(
+            url,
+            json={
+                'issue_id': str(uuid.uuid4()),
+                'user_id': authorization['user_id'],
+                'receiver_id': str(uuid.uuid4()),
+                'content': '不错的建议'
+            },
+            headers={'Authorization': authorization['token']})
 
         assert response.status == 200
         json_result = await response.json()
+        print(json_result)
         assert json_result['ok']
 
         return {'正确响应': json_result}

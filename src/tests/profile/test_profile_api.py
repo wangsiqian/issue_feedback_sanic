@@ -1,6 +1,9 @@
 import uuid
 
+from tests.account.test_account_service import AccountService
 from tests.docs import api_docs
+
+from app import app
 
 
 class ProfileApi:
@@ -71,14 +74,18 @@ class TestProfileApi:
                   'gender': '性别'
               })
     async def test_update_profile(self, client):
-        user_id = str(uuid.uuid4())
+        authorization = await AccountService.get_token(client,
+                                                       app.config.ROLE_USER)
+        user_id = authorization['user_id']
+        token = authorization['token']
         # 创建 profile
         await client.post('/service/v1/profile',
                           json={
                               'user_id': user_id,
                               'nickname': 'tester',
                               'gender': 1
-                          })
+                          },
+                          headers={'Authorization': token})
 
         # 查询
         response = await client.get(f'/service/v1/profile/{user_id}')
@@ -94,7 +101,8 @@ class TestProfileApi:
                                      json={
                                          'nickname': 'tester2',
                                          'gender': 0
-                                     })
+                                     },
+                                     headers={'Authorization': token})
         assert response3.status == 200
         json_result1 = await response3.json()
         # 再次查询

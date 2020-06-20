@@ -5,6 +5,8 @@ from profile import api, service
 
 from sanic.blueprints import Blueprint
 
+from libs.jwt import jwt_wrapper
+
 ###############################
 # api
 ###############################
@@ -12,7 +14,9 @@ profile_api_blueprint = Blueprint('profile_api', version='1')
 
 api_urls = [('/profile', api.CreateProfileApi.as_view(), ['POST']),
             ('/profile/<user_id>', api.GetProfileByIdApi.as_view(), ['GET']),
-            ('/profile/<user_id>', api.UpdateProfileApi.as_view(), ['PUT'])]
+            ('/profile/<user_id>',
+             jwt_wrapper(api.UpdateProfileApi.as_view(),
+                         required=True), ['PUT'])]
 for url, view, methods in api_urls:
     profile_api_blueprint.add_route(view, url, methods=methods)
 
